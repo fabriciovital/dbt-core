@@ -19,14 +19,14 @@
 # IN THE SOFTWARE.
 
 # Project information
-site_name: Sparkanos
+site_name: Data Engineering Stack
 #site_url: https://squidfunk.github.io/mkdocs-material/
-site_author: Wallace Graca
+site_author: Fabricio Vital
 site_description: >-
-  Documentation about Sparkanos project.
+  Documentation about Data Engineering Stack project.
 
 # Copyright
-copyright: Copyright &copy; 2024 Arruda Consulting
+copyright: Copyright &copy; 2024 Fabricio Vital
 
 # Configuration
 theme:
@@ -99,9 +99,9 @@ extra:
     property: !ENV GOOGLE_ANALYTICS_KEY
   social:
     - icon: fontawesome/brands/youtube
-      link: https://www.youtube.com/@arrudaconsulting
+      link: https://www.youtube.com/@fabriciovitalsilva
     - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/company/arrudaconsulting/
+      link: https://www.linkedin.com/in/fabricio-vital/
 
 # Extensions
 markdown_extensions:
