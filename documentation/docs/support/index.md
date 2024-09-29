@@ -2,13 +2,13 @@
 
 ## Developer
 
-Name: Wallace Camargo
+Name: Fabricio Vital da Silva
 
-E-mail: wallacecpdg@gmail.com
+E-mail: fabriciovitaljobs@gmail.com
 
-WhatsApp: +351 926 802 230
+WhatsApp: +55 69 99382-8631
 
-Linkedin: https://www.linkedin.com/in/wallace-camargo-35b615171/
+Linkedin: https://www.linkedin.com/in/fabricio-vital//
 
 ## Officials Docs
 Spark : https://spark.apache.org/docs/latest/

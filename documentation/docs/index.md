@@ -1,4 +1,4 @@
-# Welcome to the Sparkanos Project! 🎉
+# Welcome to the Data Engineering stack Project! 🎉
 
 ## Architecture
 ![image](assets/architecture.png)

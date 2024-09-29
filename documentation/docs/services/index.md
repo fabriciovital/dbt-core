@@ -8,12 +8,12 @@
 pwd
 ```
 result:
-/home/wallace/docker/sparkanos
+/home/wallace/docker/data_engineering_stack
 
 ## Up Services
 ```
 #!/bin/bash
-PROJECT_ROOT="/home/wallace/docker/sparkanos"
+PROJECT_ROOT="/home/fabricio/docker/data_engineering_stack"
 
 run_docker_compose() {
     local service_path="$1"
@@ -37,7 +37,7 @@ echo "All services started!"
 ## Down Services
 ```
 #!/bin/bash
-PROJECT_ROOT="/home/wallace/docker/sparkanos"
+PROJECT_ROOT="/home/fabricio/docker/data_engineering_stack"
 
 run_docker_compose() {
     local service_path="$1"
@@ -60,20 +60,20 @@ echo "All services stopped!"
 
 Jupyter
 
-https://jupyter.sparkanos.duckdns.org/
+https://jupyter.nortetel.duckdns.org/
 
 Minio
 
-https://minio.sparkanos.duckdns.org/
+https://minio.nortetel.duckdns.org/
 
 Open Metadata
 
-https://openmetadata.sparkanos.duckdns.org/
+https://openmetadata.nortetel.duckdns.org/
 
 Spark 
 
-https://spark.sparkanos.duckdns.org/
+https://spark.nortetel.duckdns.org/
 
 Trino
 
-https://trino.sparkanos.duckdns.org/
+https://trino.nortetel.duckdns.org/
