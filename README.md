@@ -1,4 +1,4 @@
-# Sparkanos Project
+# Data Engineering Stack Project
 
 Esse projeto tem como finalidade prover um ambiente big data/modern data stack usando um ambiente de containers com Docker.
 
