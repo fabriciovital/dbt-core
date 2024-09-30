@@ -99,6 +99,14 @@ WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
 SQLLAB_CTAS_NO_LIMIT = True
 
+# Configurações de idioma
+LANGUAGES = {
+    'en': {'flag': 'us', 'name': 'English'},
+    'pt_BR': {'flag': 'br', 'name': 'Português (Brasil)'}
+}
+
+BABEL_DEFAULT_LOCALE = 'pt_BR'
+
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
