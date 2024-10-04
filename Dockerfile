@@ -1,4 +1,4 @@
-FROM wlcamargo/spark-master
+FROM fabriciovital/data_engineering_stack:spark-master
 
 # Etl Adventure Works
 

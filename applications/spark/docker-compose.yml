@@ -1,5 +1,5 @@
 x-spark-common: &spark-common
-  image: wlcamargo/spark-master
+  image: fabriciovital/data_engineering_stack:spark-master
   networks:
     - sparkanos
   extra_hosts:

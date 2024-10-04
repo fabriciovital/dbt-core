@@ -37,14 +37,14 @@ def configure_spark():
 
 ### Creating an Image with a Spark Job:
 
-Navigate to the directory `data/jobs_spark`. Inside it, create the `.py` file with your Spark job. To build the image, use the `wlcamargo/spark-master` image as a base. It contains all the necessary Jars to work with Delta and Iceberg. Example Dockerfile:
+Navigate to the directory `data/jobs_spark`. Inside it, create the `.py` file with your Spark job. To build the image, use the `fabriciovital/data_engineering_stack:spark-master` image as a base. It contains all the necessary Jars to work with Delta and Iceberg. Example Dockerfile:
 
 ```
 Dockerfile
 ```
 
 ```
-FROM wlcamargo/spark-master
+FROM fabriciovital/data_engineering_stack:spark-master
 
 # Etl Adventure Works
 
@@ -79,11 +79,11 @@ USER spark
 
 ### Build the image:
 ``` 
-sudo docker build -t wlcamargo/spark-etl-adventure-works .
+sudo docker build -t fabriciovital/data_engineering_stack:spark-etl-adventure-works .
 ```
 ### Push the image:
 ``` 
-sudo docker push wlcamargo/spark-etl-adventure-works 
+sudo docker push fabriciovital/data_engineering_stack:spark-etl-adventure-works 
 ```
 
 ## How to create new connection?

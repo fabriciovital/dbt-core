@@ -10,7 +10,7 @@ x-superset-volumes: &superset-volumes
 
 services:
   redis:
-    image: wlcamargo/redis:latest
+    image: fabriciovital/data_engineering_stack:redis-latest
     volumes:
       - redis:/data
     networks:
@@ -27,7 +27,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   postgres:
-    image: wlcamargo/postgres:13
+    image: fabriciovital/data_engineering_stack:postgres-13
     networks:
       - sparkanos    
     environment:
@@ -48,7 +48,7 @@ services:
 
   db:
     env_file: docker/.env-non-dev
-    image: wlcamargo/postgres:10
+    image: fabriciovital/data_engineering_stack:postgres-10
     container_name: superset_db
     restart: unless-stopped
     volumes:

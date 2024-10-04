@@ -38,28 +38,28 @@ with DAG(
 
         ingestion_parquet = run_container(
             dag=dag,
-            image='wlcamargo/sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
             container_name='ingestion_parquet',
             command="spark-submit /app/114_update_landing.py"
         )
 
         ingestion_bronze = run_container(
             dag=dag,
-            image='wlcamargo/sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
             container_name='ingestion_bronze',
             command="spark-submit /app/115_update_bronze.py"
         )
 
         processing_silver = run_container(
             dag=dag,
-            image='wlcamargo/sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
             container_name='processing_silver',
             command="spark-submit /app/116_update_silver.py"
         )
 
         refinement_gold = run_container(
             dag=dag,
-            image='wlcamargo/sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
             container_name='refinement_gold',
             command="spark-submit /app/117_update_gold.py"
         )
