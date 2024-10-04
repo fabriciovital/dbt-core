@@ -30,8 +30,8 @@ from pyspark.sql.types import *
 conf = SparkConf()
 conf.setAppName("Write Delta Bronze Employee")
 conf.set("spark.hadoop.fs.s3a.endpoint", "http://172.21.121.140:9000")
-conf.set("spark.hadoop.fs.s3a.access.key", "chapolin")
-conf.set("spark.hadoop.fs.s3a.secret.key", "mudar@123")
+conf.set("spark.hadoop.fs.s3a.access.key", "admin")
+conf.set("spark.hadoop.fs.s3a.secret.key", "8Ggy2k7tugeKWy@")
 conf.set("spark.hadoop.fs.s3a.path.style.access", True)
 conf.set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
 conf.set(

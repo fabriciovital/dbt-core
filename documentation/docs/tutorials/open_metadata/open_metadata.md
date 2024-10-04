@@ -16,8 +16,8 @@ Database: Adventureworks
 ## Cataloging Minio
 ![image](./assets/open_metadata_minio.png)
 ```
-AWS Access Key ID: chapolin
-AWS Secret Access Key: mudar@123
+AWS Access Key ID: admin
+AWS Secret Access Key: 8Ggy2k7tugeKWy@
 AWS Region: us-east-1
 Endpoint URL: http://minio:9000
 ```

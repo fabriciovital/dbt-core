@@ -94,7 +94,7 @@ WHERE departmentid >= 17;
 
 -- for time travel
 update delta.bronze.delta_employee 
-set firstname = 'chapolin'
+set firstname = 'admin'
 
 insert into delta.bronze.delta_employee values ('wallace', 'Camargo', 'Graca', '77777', 'M', 50000)
 
@@ -243,6 +243,6 @@ CALL delta.system.register_table(
 
 --update sem where
 update delta.bronze.delta_employee 
-set firstname = 'chapolin'
+set firstname = 'admin'
 
 select * from delta.bronze.delta_employee 
