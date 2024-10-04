@@ -24,7 +24,7 @@ Step 2:
 ![image](./assets/trino-connect-dbeaver-2.png)
 
 ### Access Trino via UI
-170.79.87.98080
+170.79.87.9:8080
 
 username: trino 
 

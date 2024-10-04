@@ -17,7 +17,7 @@ cd applications/minio
 file ```.env```
 
 ### Access minio
-170.79.87.99000
+170.79.87.9:9000
 
 sample Minio UI:
 

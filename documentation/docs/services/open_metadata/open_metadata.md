@@ -17,7 +17,7 @@ cd applications/open_metadata
 file ```secret-key.txt```
 
 ### Access Open Metadata
-170.79.87.98585
+170.79.87.9:8585
 
 sample Open Metadata UI:
 
@@ -25,7 +25,7 @@ sample Open Metadata UI:
 
 
 ### Access Airflow Open Metadata
-170.79.87.98087
+170.79.87.9:8087
 
 sample Airflow Open Metadata UI:
 

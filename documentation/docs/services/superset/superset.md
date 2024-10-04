@@ -19,7 +19,7 @@ cd applications/superset
 file ```key-superset.txt```
 
 ### Access Superset
-170.79.87.98088
+170.79.87.9:8088
 
 sample Superset UI:
 
