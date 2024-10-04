@@ -4,7 +4,7 @@
 ![image](assets/adventureworks.png)
 
 ## How to access Jupyter
-localhost:8889
+170.79.87.98889
 
 ## Structure
 ```

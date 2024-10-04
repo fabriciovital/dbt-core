@@ -17,7 +17,7 @@ cd applications/nginx_proxy_manager
 file ```secret-nginx.txt```
 
 ### Access Nginx Proxy Manager
-localhost:81
+170.79.87.981
 
 sample Nginx Proxy Manager UI:
 

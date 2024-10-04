@@ -17,7 +17,7 @@ cd applications/airflow
 file ```secret-airflow.txt```
 
 ### Access Airflow
-localhost:8081
+170.79.87.98081
 
 sample Airflow UI:
 
