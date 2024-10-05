@@ -50,7 +50,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     healthcheck:
-      test: "curl -s http://170.79.87.99200/_cluster/health?pretty | grep status | grep -qE 'green|yellow' || exit 1"
+      test: "curl -s http://170.79.87.9:9200/_cluster/health?pretty | grep status | grep -qE 'green|yellow' || exit 1"
       interval: 15s
       timeout: 10s
       retries: 10
@@ -82,7 +82,7 @@ services:
       AUTHENTICATION_PROVIDER: ${AUTHENTICATION_PROVIDER:-basic}
       AUTHENTICATION_RESPONSE_TYPE: ${AUTHENTICATION_RESPONSE_TYPE:-id_token}
       CUSTOM_OIDC_AUTHENTICATION_PROVIDER_NAME: ${CUSTOM_OIDC_AUTHENTICATION_PROVIDER_NAME:-""}
-      AUTHENTICATION_PUBLIC_KEYS: ${AUTHENTICATION_PUBLIC_KEYS:-[http://170.79.87.98585/api/v1/system/config/jwks]}
+      AUTHENTICATION_PUBLIC_KEYS: ${AUTHENTICATION_PUBLIC_KEYS:-[http://170.79.87.9:8585/api/v1/system/config/jwks]}
       AUTHENTICATION_AUTHORITY: ${AUTHENTICATION_AUTHORITY:-https://accounts.google.com}
       AUTHENTICATION_CLIENT_ID: ${AUTHENTICATION_CLIENT_ID:-""}
       AUTHENTICATION_CALLBACK_URL: ${AUTHENTICATION_CALLBACK_URL:-""}
@@ -100,8 +100,8 @@ services:
       OIDC_PREFERRED_JWS: ${OIDC_PREFERRED_JWS:-"RS256"}
       OIDC_RESPONSE_TYPE: ${OIDC_RESPONSE_TYPE:-"code"}
       OIDC_DISABLE_PKCE: ${OIDC_DISABLE_PKCE:-true}
-      OIDC_CALLBACK: ${OIDC_CALLBACK:-"http://170.79.87.98585/callback"}
-      OIDC_SERVER_URL: ${OIDC_SERVER_URL:-"http://170.79.87.98585"}
+      OIDC_CALLBACK: ${OIDC_CALLBACK:-"http://170.79.87.9:8585/callback"}
+      OIDC_SERVER_URL: ${OIDC_SERVER_URL:-"http://170.79.87.9:8585"}
       OIDC_CLIENT_AUTH_METHOD: ${OIDC_CLIENT_AUTH_METHOD:-"client_secret_post"}
       OIDC_TENANT: ${OIDC_TENANT:-""}
       OIDC_MAX_CLOCK_SKEW: ${OIDC_MAX_CLOCK_SKEW:-""}
@@ -111,12 +111,12 @@ services:
       # SAML_IDP_ENTITY_ID: ${SAML_IDP_ENTITY_ID:-""}
       # SAML_IDP_SSO_LOGIN_URL: ${SAML_IDP_SSO_LOGIN_URL:-""}
       # SAML_IDP_CERTIFICATE: ${SAML_IDP_CERTIFICATE:-""}
-      # SAML_AUTHORITY_URL: ${SAML_AUTHORITY_URL:-"http://170.79.87.98585/api/v1/saml/login"}
+      # SAML_AUTHORITY_URL: ${SAML_AUTHORITY_URL:-"http://170.79.87.9:8585/api/v1/saml/login"}
       # SAML_IDP_NAME_ID: ${SAML_IDP_NAME_ID:-"urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress"}
-      # SAML_SP_ENTITY_ID: ${SAML_SP_ENTITY_ID:-"http://170.79.87.98585/api/v1/saml/metadata"}
-      # SAML_SP_ACS: ${SAML_SP_ACS:-"http://170.79.87.98585/api/v1/saml/acs"}
+      # SAML_SP_ENTITY_ID: ${SAML_SP_ENTITY_ID:-"http://170.79.87.9:8585/api/v1/saml/metadata"}
+      # SAML_SP_ACS: ${SAML_SP_ACS:-"http://170.79.87.9:8585/api/v1/saml/acs"}
       # SAML_SP_CERTIFICATE: ${SAML_SP_CERTIFICATE:-""}
-      # SAML_SP_CALLBACK: ${SAML_SP_CALLBACK:-"http://170.79.87.98585/saml/callback"}
+      # SAML_SP_CALLBACK: ${SAML_SP_CALLBACK:-"http://170.79.87.9:8585/saml/callback"}
       # SAML_STRICT_MODE: ${SAML_STRICT_MODE:-false}
       # SAML_SP_TOKEN_VALIDITY: ${SAML_SP_TOKEN_VALIDITY:-"3600"}
       # SAML_SEND_ENCRYPTED_NAME_ID: ${SAML_SEND_ENCRYPTED_NAME_ID:-false}
@@ -289,7 +289,7 @@ services:
       AUTHENTICATION_PROVIDER: ${AUTHENTICATION_PROVIDER:-basic}
       AUTHENTICATION_RESPONSE_TYPE: ${AUTHENTICATION_RESPONSE_TYPE:-id_token}
       CUSTOM_OIDC_AUTHENTICATION_PROVIDER_NAME: ${CUSTOM_OIDC_AUTHENTICATION_PROVIDER_NAME:-""}
-      AUTHENTICATION_PUBLIC_KEYS: ${AUTHENTICATION_PUBLIC_KEYS:-[http://170.79.87.98585/api/v1/system/config/jwks]}
+      AUTHENTICATION_PUBLIC_KEYS: ${AUTHENTICATION_PUBLIC_KEYS:-[http://170.79.87.9:8585/api/v1/system/config/jwks]}
       AUTHENTICATION_AUTHORITY: ${AUTHENTICATION_AUTHORITY:-https://accounts.google.com}
       AUTHENTICATION_CLIENT_ID: ${AUTHENTICATION_CLIENT_ID:-""}
       AUTHENTICATION_CALLBACK_URL: ${AUTHENTICATION_CALLBACK_URL:-""}
@@ -307,8 +307,8 @@ services:
       OIDC_PREFERRED_JWS: ${OIDC_PREFERRED_JWS:-"RS256"}
       OIDC_RESPONSE_TYPE: ${OIDC_RESPONSE_TYPE:-"code"}
       OIDC_DISABLE_PKCE: ${OIDC_DISABLE_PKCE:-true}
-      OIDC_CALLBACK: ${OIDC_CALLBACK:-"http://170.79.87.98585/callback"}
-      OIDC_SERVER_URL: ${OIDC_SERVER_URL:-"http://170.79.87.98585"}
+      OIDC_CALLBACK: ${OIDC_CALLBACK:-"http://170.79.87.9:8585/callback"}
+      OIDC_SERVER_URL: ${OIDC_SERVER_URL:-"http://170.79.87.9:8585"}
       OIDC_CLIENT_AUTH_METHOD: ${OIDC_CLIENT_AUTH_METHOD:-"client_secret_post"}
       OIDC_TENANT: ${OIDC_TENANT:-""}
       OIDC_MAX_CLOCK_SKEW: ${OIDC_MAX_CLOCK_SKEW:-""}
@@ -318,12 +318,12 @@ services:
       # SAML_IDP_ENTITY_ID: ${SAML_IDP_ENTITY_ID:-""}
       # SAML_IDP_SSO_LOGIN_URL: ${SAML_IDP_SSO_LOGIN_URL:-""}
       # SAML_IDP_CERTIFICATE: ${SAML_IDP_CERTIFICATE:-""}
-      # SAML_AUTHORITY_URL: ${SAML_AUTHORITY_URL:-"http://170.79.87.98585/api/v1/saml/login"}
+      # SAML_AUTHORITY_URL: ${SAML_AUTHORITY_URL:-"http://170.79.87.9:8585/api/v1/saml/login"}
       # SAML_IDP_NAME_ID: ${SAML_IDP_NAME_ID:-"urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress"}
-      # SAML_SP_ENTITY_ID: ${SAML_SP_ENTITY_ID:-"http://170.79.87.98585/api/v1/saml/metadata"}
-      # SAML_SP_ACS: ${SAML_SP_ACS:-"http://170.79.87.98585/api/v1/saml/acs"}
+      # SAML_SP_ENTITY_ID: ${SAML_SP_ENTITY_ID:-"http://170.79.87.9:8585/api/v1/saml/metadata"}
+      # SAML_SP_ACS: ${SAML_SP_ACS:-"http://170.79.87.9:8585/api/v1/saml/acs"}
       # SAML_SP_CERTIFICATE: ${SAML_SP_CERTIFICATE:-""}
-      # SAML_SP_CALLBACK: ${SAML_SP_CALLBACK:-"http://170.79.87.98585/saml/callback"}
+      # SAML_SP_CALLBACK: ${SAML_SP_CALLBACK:-"http://170.79.87.9:8585/saml/callback"}
       # SAML_STRICT_MODE: ${SAML_STRICT_MODE:-false}
       # SAML_SP_TOKEN_VALIDITY: ${SAML_SP_TOKEN_VALIDITY:-"3600"}
       # SAML_SEND_ENCRYPTED_NAME_ID: ${SAML_SEND_ENCRYPTED_NAME_ID:-false}
@@ -472,7 +472,7 @@ services:
     networks:
       - sparkanos
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider",  "http://170.79.87.98586/healthcheck" ]
+      test: [ "CMD", "wget", "-q", "--spider",  "http://170.79.87.9:8586/healthcheck" ]
 
   ingestion:
     container_name: openmetadata_ingestion
