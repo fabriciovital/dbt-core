@@ -12,7 +12,8 @@ services:
       - db_data:/var/lib/postgresql/data
     restart: always
     networks:
-      - sparkanos
+      sparkanos:
+        ipv4_address: 172.21.0.4  # Atribuindo IP fixo
     extra_hosts:
       - "host.docker.internal:host-gateway"   
 

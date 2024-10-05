@@ -3,7 +3,8 @@ services:
       image: minio/minio:RELEASE.2024-07-16T23-46-41Z-cpuv1
       container_name: minio
       networks:
-        - sparkanos
+        sparkanos:
+          ipv4_address: 172.21.0.3  # Atribuindo IP fixo
       ports:
         - 9000:9000
         - 9001:9001
