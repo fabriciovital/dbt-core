@@ -7,7 +7,7 @@
 
     <property>
         <name>fs.s3a.endpoint</name>
-        <value>http://minio:9000</value>
+        <value>http://172.21.0.4:9000</value>
     </property>
 
     <property>

@@ -24,7 +24,7 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc alias set myminio http://172.21.0.4:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
       /usr/bin/mc mb myminio/landing;
       /usr/bin/mc mb myminio/bronze;
       /usr/bin/mc mb myminio/silver;

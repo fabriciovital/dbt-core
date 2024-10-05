@@ -19,7 +19,7 @@ Database: Adventureworks
 AWS Access Key ID: admin
 AWS Secret Access Key: 8Ggy2k7tugeKWy@
 AWS Region: us-east-1
-Endpoint URL: http://minio:9000
+Endpoint URL: http://172.21.0.4:9000
 ```
 
 ## Cataloging Airflow
