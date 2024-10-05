@@ -11,19 +11,20 @@ from pyspark.sql import functions as func
 
 load_dotenv()
 
-HOST_ADDRESS = os.getenv("HOST_ADDRESS")
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+HOST_ADDRESS_MINIO=os.getenv('HOST_ADDRESS_MINIO')
+MINIO_ACCESS_KEY=os.getenv('MINIO_ACCESS_KEY')
+MINIO_SECRET_KEY=os.getenv('MINIO_SECRET_KEY')
 
-USER_POSTGRES = os.getenv("USER_POSTGRES")
-PASSWORD_POSTGRES = os.getenv("PASSWORD_POSTGRES")
+HOST_ADDRESS_ADVENTUREWORKS=os.getenv('HOST_ADDRESS_ADVENTUREWORKS')
+USER_POSTGRES=os.getenv('USER_POSTGRES')
+PASSWORD_POSTGRES=os.getenv('PASSWORD_POSTGRES')
 
 
 def configure_spark():
     """Configure and return a SparkSession."""
     spark = (
         SparkSession.builder.appName("update_landing")
-        .config("spark.hadoop.fs.s3a.endpoint", f"http://{HOST_ADDRESS}:9000")
+        .config("spark.hadoop.fs.s3a.endpoint", f"http://{HOST_ADDRESS_MINIO}:9000")
         .config("spark.hadoop.fs.s3a.access.key", MINIO_ACCESS_KEY)
         .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY)
         .config("spark.hadoop.fs.s3a.path.style.access", True)
@@ -73,7 +74,7 @@ def ingest_data():
 
             df_input_data = (
                 spark.read.format("jdbc")
-                .option("url", f"jdbc:postgresql://{HOST_ADDRESS}:5435/Adventureworks")
+                .option("url", f"jdbc:postgresql://{HOST_ADDRESS_ADVENTUREWORKS}:5432/Adventureworks")
                 .option("user", USER_POSTGRES)
                 .option("dbtable", f"({query}) as filtered")
                 .option("password", PASSWORD_POSTGRES)
