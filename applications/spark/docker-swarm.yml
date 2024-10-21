@@ -30,7 +30,7 @@ services:
     <<: *init
     container_name: spark-master
     ports:
-      - 8080:8080
+      - 8082:8080
     expose:
       - 7077
     command: /opt/spark/sbin/start-master.sh

@@ -6,7 +6,7 @@ from pyspark.sql.types import *
 conf = SparkConf()
 
 conf.setAppName("Sample write Delta table")
-conf.set("spark.hadoop.fs.s3a.endpoint", "http://172.21.0.3:9000")
+conf.set("spark.hadoop.fs.s3a.endpoint", "http://170.79.87.9:9000")
 conf.set("spark.hadoop.fs.s3a.access.key", "admin")
 conf.set("spark.hadoop.fs.s3a.secret.key", "8Ggy2k7tugeKWy@")
 conf.set("spark.hadoop.fs.s3a.path.style.access", True)

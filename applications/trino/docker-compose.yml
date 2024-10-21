@@ -4,7 +4,7 @@ services:
     container_name: trino
     hostname: trino
     ports:
-      - 8080:8080
+      - 8082:8080
     volumes:
       - ./conf/hive.properties:/etc/trino/catalog/hive.properties
       - ./conf/delta.properties:/etc/trino/catalog/delta.properties

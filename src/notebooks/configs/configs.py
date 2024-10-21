@@ -1,8 +1,8 @@
 lake_path = {
-    "landing_adventure_works": "s3a://landing/adventure_works/",
-    "bronze": "s3a://bronze/adventure_works/",
-    "silver": "s3a://silver/adventure_works/",
-    "gold": "s3a://gold/adventure_works/",
+    "landing": "s3a://landing/isp_performance/",
+    "bronze": "s3a://bronze/isp_performance/",
+    "silver": "s3a://silver/isp_performance/",
+    "gold": "s3a://gold/isp_performance/",
 }
 
 prefix_layer_name = {"0": "landing_", "1": "bronze_", "2": "silver_", "3": "gold_"}
@@ -10,10 +10,10 @@ prefix_layer_name = {"0": "landing_", "1": "bronze_", "2": "silver_", "3": "gold
 # ************************
 # Start Bronze Tables
 # ************************
-tables_postgres_adventureworks = {
-    "1": "sales.countryregioncurrency",
-    "2": "sales.creditcard",
-    "3": "sales.currency",
+tables_api_isp_performance = {
+    "1": "ordem_servico_aberto",
+    #"2": "sales.creditcard",
+    #"3": "sales.currency",
     #'4': 'sales.currencyrate',
     #'5': 'sales.customer',
     #'6': 'sales.personcreditcard',
@@ -30,9 +30,9 @@ tables_postgres_adventureworks = {
     #'17': 'sales.specialoffer',
     #'18': 'sales.specialofferproduct',
     #'19': 'sales.store',
-    "20": "humanresources.department",
-    "21": "humanresources.employee",
-    "22": "sales.salesorderheader",
+    #"20": "humanresources.department",
+    #"21": "humanresources.employee",
+    #"22": "sales.salesorderheader",
 }
 
 # ************************
