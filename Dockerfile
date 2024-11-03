@@ -15,11 +15,10 @@ COPY src/notebooks/functions /app/functions/
 
 # Notebooks
 COPY src/notebooks/.env /app/
-COPY src/notebooks/114_update_landing.py /app/
-COPY src/notebooks/115_update_bronze.py /app/
-COPY src/notebooks/116_update_silver.py /app/
-COPY src/notebooks/117_update_gold.py /app/
-COPY src/notebooks/examples/111_sample_airflow.py /app/
+COPY src/notebooks/106_insert_landing.py /app/
+COPY src/notebooks/107_insert_bronze.py /app/
+COPY src/notebooks/108_insert_silver.py /app/
+COPY src/notebooks/109_insert_gold.py /app/
 
 # Spark Configs
 COPY applications/spark/conf/env /env/
