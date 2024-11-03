@@ -107,6 +107,33 @@ LANGUAGES = {
 
 BABEL_DEFAULT_LOCALE = 'pt_BR'
 
+# Habilitar CORS
+ENABLE_CORS = True
+
+# Configurações do CORS
+CORS_OPTIONS = {
+    'supports_credentials': True,
+    'allow_headers': ['*'],
+    'resources': ['*'],
+    'origins': ['*']
+}
+
+# Configurações de Feature Flags
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
+    "EMBEDDED_SUPERSET": True  # Requirement
+}
+
+# Configurações de Guest Role e Token
+GUEST_ROLE_NAME = "Public"  # Ajustar permissões de função se ocorrer erro 403
+GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutos, ou ajuste para um tempo maior
+
+# Adicionando o nome da aplicação
+APP_NAME = "ISP Performance"
+
+# Caminho da logo personalizada
+APP_ICON = "/app/docker/static/assets/images/Logo-preta-bg-branca.png"
+
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
