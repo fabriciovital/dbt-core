@@ -129,7 +129,7 @@ GUEST_ROLE_NAME = "Public"  # Ajustar permissões de função se ocorrer erro 40
 GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutos, ou ajuste para um tempo maior
 
 # Adicionando o nome da aplicação
-APP_NAME = "ISP Performance"
+APP_NAME = "ISP Performance Analytics"
 
 # Caminho da logo personalizada
 APP_ICON = "/app/docker/static/assets/images/Logo-preta-bg-branca.png"

@@ -4,7 +4,7 @@ from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.task_group import TaskGroup
 
 default_args = {
-    'owner': 'Wallace Camargo',
+    'owner': 'Fabricio Vital',
     'depends_on_past': False,
 }
 
@@ -26,42 +26,42 @@ def run_container(dag, image, container_name, command):
 
 # Definição da DAG
 with DAG(
-    'adventure_works',
+    'isp_performance',
     default_args=default_args,
-    start_date=datetime(2024, 8, 1),  # Use a fixed start date
-    schedule_interval='@weekly',
+    start_date=datetime(2024, 11, 3),  # Use a fixed start date
+    schedule_interval='*/5 * * * *',  # Executa a cada 5 minutos
     catchup=False,  # Adiciona este parâmetro para evitar a execução de tarefas passadas
     tags=['sparkanos']
 ) as dag:
     
-    with TaskGroup(group_id="adventure_works") as etl:
+    with TaskGroup(group_id="isp_performance") as etl:
 
         ingestion_parquet = run_container(
             dag=dag,
-            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_parquet',
-            command="spark-submit /app/114_update_landing.py"
+            command="spark-submit /app/106_insert_landing.py"
         )
 
         ingestion_bronze = run_container(
             dag=dag,
-            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_bronze',
-            command="spark-submit /app/115_update_bronze.py"
+            command="spark-submit /app/107_insert_bronze.py"
         )
 
         processing_silver = run_container(
             dag=dag,
-            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='processing_silver',
-            command="spark-submit /app/116_update_silver.py"
+            command="spark-submit /app/108_insert_silver.py"
         )
 
         refinement_gold = run_container(
             dag=dag,
-            image='fabriciovital/data_engineering_stack:sparkanos-adventure-works',
+            image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='refinement_gold',
-            command="spark-submit /app/117_update_gold.py"
+            command="spark-submit /app/109_insert_gold.py"
         )
 
     ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold
