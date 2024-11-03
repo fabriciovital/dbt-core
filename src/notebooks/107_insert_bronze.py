@@ -1,5 +1,3 @@
-pip install python-dotenv
-
 import pyspark
 from pyspark.sql import SparkSession
 import logging
@@ -51,7 +49,7 @@ def process_table(table):
         df_input_data = spark.read.format("parquet").load(f'{table_input_name}{input_prefix_layer_name}{table_name}')
         
         # Reparticionar os dados para melhorar o desempenho de escrita
-        df_input_data = df_input_data.repartition(100)  # Ajuste o número de partições conforme necessário
+        df_input_data = df_input_data.repartition(200)  # Ajuste o número de partições conforme necessário
         
         # Adicionar metadados ao DataFrame
         df_with_update_date = F.add_metadata(df_input_data)
