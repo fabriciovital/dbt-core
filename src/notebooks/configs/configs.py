@@ -8,32 +8,84 @@ lake_path = {
 prefix_layer_name = {"0": "landing_", "1": "bronze_", "2": "silver_", "3": "gold_"}
 
 # ************************
-# Start Landing Parquet from API
+# Start Landing Parquet from API Situacionais
 # ************************
 tables_landing = {
     "1": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/filial",
     "2": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/colaboradores",
     "3": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/assunto",
-    "4": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/aberto",
-    "5": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/fechado",
+    "4": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/setor",
+    "5": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/usuarios",
+    "6": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/aberto",
 }
 
 # ************************
-# Start Bronze Tables
+# Start Bronze Tables Situacionais
 # ************************
 tables_api_isp_performance = {
-    "1": "ordem_servico_aberto",
-    "2": "ordem_servico_fechado",
+    "1": "dim_filial",
+    "2": "dim_colaboradores",
     "3": "dim_assunto",
-    "4": "dim_filial",
-    "5": "dim_colaboradores",
+    "4": "dim_setor",
+    "5": "dim_usuarios",
+    "6": "ordem_servico_aberto",
 }
 
 # ************************
-# Start Silver Tables
+# Start Silver Tables Situacionais
 # ************************
 tables_silver = {
-    # Ordem Serviço Aberto
+    # Dimensao Filial
+    "dim_filial": f"""
+SELECT 
+    id,
+    fantasia,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_filial`
+    """,
+    # Dimensao Colaboradores
+    "dim_colaboradores": f"""
+SELECT 
+     id,
+     funcionario,
+     last_update,
+     month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_colaboradores`
+    """,
+    # Dimensao Assunto
+    "dim_assunto": f"""
+SELECT 
+    id,
+    assunto,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_assunto`
+    """,
+        # Dimensao Setor
+    "dim_setor": f"""
+SELECT 
+    id,
+    setor,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_setor`
+    """,
+        # Dimensao Usuarios
+    "dim_usuarios": f"""
+SELECT 
+    id,
+    login,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_usuarios`
+    """,
+        # Ordem Serviço Aberto
     "ordem_servico_aberto": f"""
 SELECT
     mensagem_resposta,
@@ -70,7 +122,7 @@ SELECT
     status,
     id_cliente,
     id_assunto,
-    setor,
+    setor as id_setor,
     id_cidade,
     id_tecnico,
     prioridade,
@@ -115,6 +167,177 @@ SELECT
 FROM
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}ordem_servico_aberto`
 """,
+}
+
+
+# ************************
+# Start Gold Tables
+# ************************
+tables_gold = {
+    # Ordem Serviço Aberto
+    "ordem_servico_aberto": """
+SELECT
+    t1.mensagem_resposta,
+    t1.data_hora_analise,
+    t1.data_hora_encaminhado,
+    t1.data_hora_assumido,
+    t1.data_hora_execucao,
+    t1.id_contrato_kit,
+    t1.preview,
+    t1.data_agenda_final,
+    t1.id,
+    t1.tipo,
+    t1.id_filial,
+    t2.fantasia,
+    t1.id_wfl_tarefa,
+    t1.status_sla,
+    t1.data_abertura,
+    t1.ano_abertura,
+    t1.ano_mes_abertura,
+    t1.mes_abertura,
+    t1.trimestre_abertura,
+    t1.semana_do_ano_abertura,
+    t1.semana_do_mes_abertura,
+    t1.dia_da_semana_abertura,
+    t1.dia_do_mes_abertura,
+    t1.hora_abertura,
+    t1.periodo_horario_abertura,
+    t1.melhor_horario_agenda,
+    t1.liberado,
+    t1.status,
+    t1.id_cliente,
+    t1.id_assunto,
+    t3.assunto,
+    t1.id_setor,
+    t6.setor,
+    t1.id_cidade,
+    t1.id_tecnico,
+    t4.funcionario,
+    t1.prioridade,
+    t1.mensagem,
+    t1.protocolo,
+    t1.endereco,
+    t1.complemento,
+    t1.id_condominio,
+    t1.bloco,
+    t1.apartamento,
+    t1.latitude,
+    t1.bairro,
+    t1.longitude,
+    t1.referencia,
+    t1.impresso,
+    t1.data_inicio,
+    t1.data_agenda,
+    t1.data_final,
+    t1.data_fechamento,
+    t1.id_wfl_param_os,
+    t1.valor_total_comissao,
+    t1.valor_total,
+    t1.valor_outras_despesas,
+    t1.idx,
+    t1.id_su_diagnostico,
+    t1.gera_comissao,
+    t1.id_estrutura,
+    t1.id_login,
+    t5.login,
+    t1.valor_unit_comissao,
+    t1.data_prazo_limite,
+    t1.data_reservada,
+    t1.id_ticket,
+    t1.origem_endereco,
+    t1.justificativa_sla_atrasado,
+    t1.origem_endereco_estrutura,
+    t1.data_reagendar,
+    t1.data_prev_final,
+    t1.origem_cadastro,
+    t1.ultima_atualizacao,
+    t1.last_update,
+    t1.month_key
+FROM
+     delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
+    """,
+    # Resumo de Ordens Abertas por Situacao
+    "ordem_servico_aberto_resumo_situacao": """
+SELECT
+    t1.ano_abertura,
+    t1.ano_mes_abertura,
+    t1.mes_abertura,
+    t1.trimestre_abertura,
+    t1.semana_do_ano_abertura,
+    t1.semana_do_mes_abertura,
+    t1.dia_da_semana_abertura,
+    t1.dia_do_mes_abertura,
+    t1.hora_abertura,
+    t1.periodo_horario_abertura,
+    t1.id_filial,
+    t2.fantasia,
+    t1.id_setor,
+    t6.setor,
+    t1.id_assunto,
+    t3.assunto,
+    t1.id_tecnico,
+    t4.funcionario,
+    t1.id_login,
+    t5.login,
+    t1.status,
+    COUNT(DISTINCT(t1.id)) AS total_ordem_aberta,
+    t1.month_key
+FROM
+     delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
+GROUP BY
+    t1.ano_abertura,
+    t1.ano_mes_abertura,
+    t1.mes_abertura,
+    t1.trimestre_abertura,
+    t1.semana_do_ano_abertura,
+    t1.semana_do_mes_abertura,
+    t1.dia_da_semana_abertura,
+    t1.dia_do_mes_abertura,
+    t1.hora_abertura,
+    t1.periodo_horario_abertura,
+    t1.id_filial,
+    t2.fantasia,
+    t1.id_setor,
+    t6.setor,
+    t1.id_assunto,
+    t3.assunto,
+    t1.id_tecnico,
+    t4.funcionario,
+    t1.id_login,
+    t5.login,
+    t1.status,
+    t1.month_key
+    """,
+}
+
+# ************************
+# Start Landing Parquet from API Produtividade
+# ************************
+tables_landing_produtividade = {
+    "1": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/fechado",
+}
+
+# ************************
+# Start Bronze Tables Produtividade
+# ************************
+tables_api_isp_performance_produtividade = {
+    "1": "ordem_servico_fechado",
+}
+
+# ************************
+# Start Silver Tables Produtividade
+# ************************
+tables_silver_produtividade = {
     # Ordem Serviço Fechado
     "ordem_servico_fechado": f"""
 SELECT 
@@ -152,7 +375,7 @@ SELECT
     status,
     id_cliente,
     id_assunto,
-    setor,
+    setor as id_setor,
     id_cidade,
     id_tecnico,
     prioridade,
@@ -212,125 +435,12 @@ SELECT
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}ordem_servico_fechado`
     """,
-    # Dimensao Filial
-    "dim_filial": f"""
-SELECT 
-    id,
-    fantasia,
-    last_update,
-    month_key
-FROM 
-    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_filial`
-    """,
-    # Dimensao Colaboradores
-    "dim_colaboradores": f"""
-SELECT 
-     id,
-     funcionario,
-     last_update,
-     month_key
-FROM 
-    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_colaboradores`
-    """,
-    # Dimensao Assunto
-    "dim_assunto": f"""
-SELECT 
-    id,
-    assunto,
-    last_update,
-    month_key
-FROM 
-    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_assunto`
-    """,
 }
 
 # ************************
 # Start Gold Tables
 # ************************
-tables_gold = {
-    # Ordem Serviço Aberto
-    "ordem_servico_aberto": """
-SELECT
-    t1.mensagem_resposta,
-    t1.data_hora_analise,
-    t1.data_hora_encaminhado,
-    t1.data_hora_assumido,
-    t1.data_hora_execucao,
-    t1.id_contrato_kit,
-    t1.preview,
-    t1.data_agenda_final,
-    t1.id,
-    t1.tipo,
-    t1.id_filial,
-    t2.fantasia,
-    t1.id_wfl_tarefa,
-    t1.status_sla,
-    t1.data_abertura,
-    t1.ano_abertura,
-    t1.ano_mes_abertura,
-    t1.mes_abertura,
-    t1.trimestre_abertura,
-    t1.semana_do_ano_abertura,
-    t1.semana_do_mes_abertura,
-    t1.dia_da_semana_abertura,
-    t1.dia_do_mes_abertura,
-    t1.hora_abertura,
-    t1.periodo_horario_abertura,
-    t1.melhor_horario_agenda,
-    t1.liberado,
-    t1.status,
-    t1.id_cliente,
-    t1.id_assunto,
-    t3.assunto,
-    t1.setor,
-    t1.id_cidade,
-    t1.id_tecnico,
-    t4.funcionario,
-    t1.prioridade,
-    t1.mensagem,
-    t1.protocolo,
-    t1.endereco,
-    t1.complemento,
-    t1.id_condominio,
-    t1.bloco,
-    t1.apartamento,
-    t1.latitude,
-    t1.bairro,
-    t1.longitude,
-    t1.referencia,
-    t1.impresso,
-    t1.data_inicio,
-    t1.data_agenda,
-    t1.data_final,
-    t1.data_fechamento,
-    t1.id_wfl_param_os,
-    t1.valor_total_comissao,
-    t1.valor_total,
-    t1.valor_outras_despesas,
-    t1.idx,
-    t1.id_su_diagnostico,
-    t1.gera_comissao,
-    t1.id_estrutura,
-    t1.id_login,
-    t1.valor_unit_comissao,
-    t1.data_prazo_limite,
-    t1.data_reservada,
-    t1.id_ticket,
-    t1.origem_endereco,
-    t1.justificativa_sla_atrasado,
-    t1.origem_endereco_estrutura,
-    t1.data_reagendar,
-    t1.data_prev_final,
-    t1.origem_cadastro,
-    t1.ultima_atualizacao,
-    t1.last_update,
-    t1.month_key
-FROM
-     delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
-    """,
+tables_gold_produtividade = {
     # Ordem Serviço Fechado
     "ordem_servico_fechado": """
 SELECT
@@ -365,7 +475,8 @@ SELECT
     t1.id_cliente,
     t1.id_assunto,
     t3.assunto,
-    t1.setor,
+    t1.id_setor,
+    t6.setor,
     t1.id_cidade,
     t1.id_tecnico,
     t4.funcionario,
@@ -405,6 +516,7 @@ SELECT
     t1.gera_comissao,
     t1.id_estrutura,
     t1.id_login,
+    t5.login,
     t1.valor_unit_comissao,
     t1.data_prazo_limite,
     t1.data_reservada,
@@ -423,55 +535,8 @@ FROM
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
-    """,
-    # Resumo de Ordens Abertas por Situacao
-    "ordem_servico_aberto_resumo_situacao": """
-SELECT
-    t1.ano_abertura,
-    t1.ano_mes_abertura,
-    t1.mes_abertura,
-    t1.trimestre_abertura,
-    t1.semana_do_ano_abertura,
-    t1.semana_do_mes_abertura,
-    t1.dia_da_semana_abertura,
-    t1.dia_do_mes_abertura,
-    t1.hora_abertura,
-    t1.periodo_horario_abertura,
-    t1.id_filial,
-    t2.fantasia,
-    t1.setor,
-    t1.id_assunto,
-    t3.assunto,
-    t1.id_tecnico,
-    t4.funcionario,
-    t1.status,
-    COUNT(DISTINCT(t1.id)) AS total_ordem_aberta,
-    t1.month_key
-FROM
-    delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
-GROUP BY
-    t1.ano_abertura,
-    t1.ano_mes_abertura,
-    t1.mes_abertura,
-    t1.trimestre_abertura,
-    t1.semana_do_ano_abertura,
-    t1.semana_do_mes_abertura,
-    t1.dia_da_semana_abertura,
-    t1.dia_do_mes_abertura,
-    t1.hora_abertura,
-    t1.periodo_horario_abertura,
-    t1.id_filial,
-    t2.fantasia,
-    t1.setor,
-    t1.id_assunto,
-    t3.assunto,
-    t1.id_tecnico,
-    t4.funcionario,
-    t1.status,
-    t1.month_key
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
     """,
     # Resumo de Ordens Fechadas por Situacao
     "ordem_servico_fechado_resumo_situacao": """
@@ -498,7 +563,8 @@ SELECT
     t1.periodo_horario_fechamento,
     t1.id_filial,
     t2.fantasia,
-    t1.setor,
+    t1.id_setor,
+    t6.setor,
     t1.id_assunto,
     t3.assunto,
     t1.id_tecnico,
@@ -511,6 +577,8 @@ FROM
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
 GROUP BY
     t1.ano_abertura,
     t1.ano_mes_abertura,
@@ -534,7 +602,8 @@ GROUP BY
     t1.periodo_horario_fechamento,
     t1.id_filial,
     t2.fantasia,
-    t1.setor,
+    t1.id_setor,
+    t6.setor,
     t1.id_assunto,
     t3.assunto,
     t1.id_tecnico,

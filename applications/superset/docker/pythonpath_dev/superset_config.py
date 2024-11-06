@@ -93,7 +93,7 @@ CELERY_CONFIG = CeleryConfig
 
 FEATURE_FLAGS = {"ALERT_REPORTS": True}
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
-WEBDRIVER_BASEURL = "http://superset:8088/"
+WEBDRIVER_BASEURL = "http://170.79.87.9:8088"
 # The base URL for the email report hyperlinks.
 WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
@@ -125,7 +125,7 @@ FEATURE_FLAGS = {
 }
 
 # Configurações de Guest Role e Token
-GUEST_ROLE_NAME = "Public"  # Ajustar permissões de função se ocorrer erro 403
+GUEST_ROLE_NAME = "Admin"  # Ajustar permissões de função se ocorrer erro 403
 GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutos, ou ajuste para um tempo maior
 
 # Adicionando o nome da aplicação

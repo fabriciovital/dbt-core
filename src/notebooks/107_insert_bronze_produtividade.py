@@ -15,7 +15,7 @@ MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
 
 spark = SparkSession.builder \
-    .appName("el_landing_to_bronze_isp_performance") \
+    .appName("el_landing_to_bronze_isp_performance_produtividade") \
     .config("spark.hadoop.fs.s3a.endpoint", f"http://{HOST_ADDRESS}:9000") \
     .config("spark.hadoop.fs.s3a.access.key", MINIO_ACCESS_KEY) \
     .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY) \
@@ -76,7 +76,7 @@ def process_table(table):
         logging.error(f'Error processing table {table_name}: {str(e)}')
 
 # Processar cada tabela especificada em 'configs.tables_api_isp_performance'
-for key, value in configs.tables_api_isp_performance.items():
+for key, value in configs.tables_api_isp_performance_produtividade.items():
     process_table(value)
 
 logging.info("Conversion from parquet to Delta completed successfully!")

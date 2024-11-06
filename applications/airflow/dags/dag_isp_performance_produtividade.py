@@ -26,45 +26,45 @@ def run_container(dag, image, container_name, command):
 
 # Definição da DAG
 with DAG(
-    'isp_performance',
+    'isp_performance_produtividade',
     default_args=default_args,
     start_date=datetime(2024, 11, 4),  # Use a fixed start date
-    schedule_interval='*/5 * * * *',  # Executa a cada 5 minutos
+    schedule_interval='*/60 * * * *',  # Executa a cada 5 minutos
     catchup=False,  # Adiciona este parâmetro para evitar a execução de tarefas passadas
     max_active_runs=1,  # Limita a DAG para uma execução ativa por vez
     tags=['sparkanos']
 ) as dag:
     
-    with TaskGroup(group_id="isp_performance") as etl:
+    with TaskGroup(group_id="isp_performance_produtividade") as etl:
 
-        ingestion_parquet = run_container(
+        ingestion_parquet_produtividade = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='ingestion_parquet',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/106_insert_landing.py"
+            container_name='ingestion_parquet_produtividade',
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/106_insert_landing_produtividade.py"
         )
 
-        ingestion_bronze = run_container(
+        ingestion_bronze_produtividade = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='ingestion_bronze',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/107_insert_bronze.py"
+            container_name='ingestion_bronze_produtividade',
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/107_insert_bronze_produtividade.py"
         )
 
-        processing_silver = run_container(
+        processing_silver_produtividade = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='processing_silver',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/108_insert_silver.py"
+            container_name='processing_silver_produtividade',
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/108_insert_silver_produtividade.py"
         )
 
-        refinement_gold = run_container(
+        refinement_gold_produtividade = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='refinement_gold',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/109_insert_gold.py"
+            container_name='refinement_gold_produtividade',
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/109_insert_gold_produtividade.py"
         )
 
-    ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold
+    ingestion_parquet_produtividade >> ingestion_bronze_produtividade >> processing_silver_produtividade >> refinement_gold_produtividade
 
 etl
