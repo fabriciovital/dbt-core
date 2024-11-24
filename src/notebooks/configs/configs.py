@@ -165,7 +165,7 @@ SELECT
     last_update,
     DATE_FORMAT(data_abertura, 'yyyyMM') AS month_key
 FROM
-    delta.`{{hdfs_source}}{{prefix_layer_name_source}}ordem_servico_aberto`
+    delta.`s3a://bronze/isp_performance/bronze_ordem_servico_aberto`
 """,
 }
 
@@ -275,25 +275,20 @@ SELECT
     t1.hora_abertura,
     t1.periodo_horario_abertura,
     t1.id_filial,
-    t2.fantasia,
+    t1.fantasia,
     t1.id_setor,
-    t6.setor,
+    t1.setor,
     t1.id_assunto,
-    t3.assunto,
+    t1.assunto,
     t1.id_tecnico,
-    t4.funcionario,
+    t1.funcionario,
     t1.id_login,
-    t5.login,
+    t1.login,
     t1.status,
     COUNT(DISTINCT(t1.id)) AS total_ordem_aberta,
     t1.month_key
 FROM
-     delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
+    delta.`s3a://gold/isp_performance/gold_ordem_servico_aberto` t1
 GROUP BY
     t1.ano_abertura,
     t1.ano_mes_abertura,
@@ -306,15 +301,35 @@ GROUP BY
     t1.hora_abertura,
     t1.periodo_horario_abertura,
     t1.id_filial,
-    t2.fantasia,
+    t1.fantasia,
     t1.id_setor,
-    t6.setor,
+    t1.setor,
     t1.id_assunto,
-    t3.assunto,
+    t1.assunto,
     t1.id_tecnico,
-    t4.funcionario,
+    t1.funcionario,
     t1.id_login,
-    t5.login,
+    t1.login,
+    t1.status,
+    t1.month_key
+    """,
+        # Resumo de Ordens Abertas por Status
+    "ordem_servico_aberto_resumo_status": """
+SELECT
+    t1.id_filial,
+    t1.fantasia,
+    t1.id_setor,
+    t1.setor,
+    t1.status,
+    COUNT(DISTINCT(t1.id)) AS total_ordem_aberta,
+    t1.month_key
+FROM
+     delta.`s3a://gold/isp_performance/gold_ordem_servico_aberto` t1
+GROUP BY
+    t1.id_filial,
+    t1.fantasia,
+    t1.id_setor,
+    t1.setor,
     t1.status,
     t1.month_key
     """,
@@ -441,103 +456,6 @@ FROM
 # Start Gold Tables
 # ************************
 tables_gold_produtividade = {
-    # Ordem Serviço Fechado
-    "ordem_servico_fechado": """
-SELECT
-    t1.mensagem_resposta,
-    t1.data_hora_analise,
-    t1.data_hora_encaminhado,
-    t1.data_hora_assumido,
-    t1.data_hora_execucao,
-    t1.id_contrato_kit,
-    t1.preview,
-    t1.data_agenda_final,
-    t1.id,
-    t1.tipo,
-    t1.id_filial,
-    t2.fantasia,
-    t1.id_wfl_tarefa,
-    t1.status_sla,
-    t1.data_abertura,
-    t1.ano_abertura,
-    t1.ano_mes_abertura,
-    t1.mes_abertura,
-    t1.trimestre_abertura,
-    t1.semana_do_ano_abertura,
-    t1.semana_do_mes_abertura,
-    t1.dia_da_semana_abertura,
-    t1.dia_do_mes_abertura,
-    t1.hora_abertura,
-    t1.periodo_horario_abertura,
-    t1.melhor_horario_agenda,
-    t1.liberado,
-    t1.status,
-    t1.id_cliente,
-    t1.id_assunto,
-    t3.assunto,
-    t1.id_setor,
-    t6.setor,
-    t1.id_cidade,
-    t1.id_tecnico,
-    t4.funcionario,
-    t1.prioridade,
-    t1.mensagem,
-    t1.protocolo,
-    t1.endereco,
-    t1.complemento,
-    t1.id_condominio,
-    t1.bloco,
-    t1.apartamento,
-    t1.latitude,
-    t1.bairro,
-    t1.longitude,
-    t1.referencia,
-    t1.impresso,
-    t1.data_inicio,
-    t1.data_agenda,
-    t1.data_final,
-    t1.data_fechamento,
-    t1.ano_fechamento,
-    t1.ano_mes_fechamento,
-    t1.mes_fechamento,
-    t1.trimestre_fechamento,
-    t1.semana_do_ano,
-    t1.semana_do_mes_fechamento,
-    t1.dia_da_semana_fechamento,
-    t1.dia_do_mes_fechamento,
-    t1.hora_fechamento,
-    t1.periodo_horario_fechamento,
-    t1.id_wfl_param_os,
-    t1.valor_total_comissao,
-    t1.valor_total,
-    t1.valor_outras_despesas,
-    t1.idx,
-    t1.id_su_diagnostico,
-    t1.gera_comissao,
-    t1.id_estrutura,
-    t1.id_login,
-    t5.login,
-    t1.valor_unit_comissao,
-    t1.data_prazo_limite,
-    t1.data_reservada,
-    t1.id_ticket,
-    t1.origem_endereco,
-    t1.justificativa_sla_atrasado,
-    t1.origem_endereco_estrutura,
-    t1.data_reagendar,
-    t1.data_prev_final,
-    t1.origem_cadastro,
-    t1.ultima_atualizacao,
-    t1.last_update,
-    t1.month_key
-FROM
-     delta.`s3a://silver/isp_performance/silver_ordem_servico_fechado` t1
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
-    """,
     # Resumo de Ordens Fechadas por Situacao
     "ordem_servico_fechado_resumo_situacao": """
 SELECT
@@ -564,7 +482,7 @@ SELECT
     t1.id_filial,
     t2.fantasia,
     t1.id_setor,
-    t6.setor,
+    t5.setor,
     t1.id_assunto,
     t3.assunto,
     t1.id_tecnico,
@@ -573,12 +491,11 @@ SELECT
     COUNT(DISTINCT(t1.id)) AS total_ordem_fechado,
     t1.month_key
 FROM
-    delta.`s3a://silver/isp_performance/silver_ordem_servico_fechado` t1
+     delta.`s3a://silver/isp_performance/silver_ordem_servico_fechado` t1
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
 LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t4 ON (t4.id = t1.id_tecnico)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t5 ON (t5.id = t1.id_login)
-LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t6 ON (t6.id = t1.id_setor)
+LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t5 ON (t5.id = t1.id_setor)
 GROUP BY
     t1.ano_abertura,
     t1.ano_mes_abertura,
@@ -603,7 +520,7 @@ GROUP BY
     t1.id_filial,
     t2.fantasia,
     t1.id_setor,
-    t6.setor,
+    t5.setor,
     t1.id_assunto,
     t3.assunto,
     t1.id_tecnico,

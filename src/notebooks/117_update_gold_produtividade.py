@@ -26,10 +26,10 @@ def merge_data(spark, df_input_data, output_path, primary_key):
         if DeltaTable.isDeltaTable(spark, output_path):
             delta_table = DeltaTable.forPath(spark, output_path)
 
-            # Realizar o merge para aplicar inserções, atualizações e exclusões
+            # Realizar merge para inserir novos registros e atualizar os existentes
             delta_table.alias("target").merge(
-                df_with_update_date.alias("source"),
-                f"target.{primary_key} = source.{primary_key}"
+                df_with_month_key.alias("source"),
+                "target.id = source.id AND (target.data_fechamento < source.data_fechamento OR target.id IS NULL)"  # Filtra registros novos ou atualizados
             ).whenMatchedUpdateAll() \
              .whenNotMatchedInsertAll() \
              .execute()
@@ -78,15 +78,15 @@ if __name__ == "__main__":
     output_path = configs.lake_path['gold']
 
     try:
-        for table_name, query_input in configs.tables_gold.items():
+        for table_name, query_input in configs.tables_gold_produtividade.items():
             table_name = F.convert_table_name(table_name)
-            query_input = F.get_query(table_name, input_path, input_prefix_layer_name, configs.tables_gold)        
+            query_input = F.get_query(table_name, input_path, input_prefix_layer_name, configs.tables_gold_produtividade)        
 
             storage_output = f'{output_path}{output_prefix_layer_name}{table_name}'
             
             # Processar dados e realizar merge
             df_input_data = spark.sql(query_input)
-            merge_data(spark, df_input_data, storage_output, primary_key="id")  # Ajuste 'id' para a chave primária específica de cada tabela
+            merge_data(spark, df_input_data, storage_output)  # Ajuste 'id' para a chave primária específica de cada tabela
             
         logging.info("Process to gold completed!")
 

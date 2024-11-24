@@ -29,7 +29,7 @@ with DAG(
     'isp_performance_produtividade',
     default_args=default_args,
     start_date=datetime(2024, 11, 4),  # Use a fixed start date
-    schedule_interval='*/60 * * * *',  # Executa a cada 5 minutos
+    schedule_interval='*/60 * * * *',  # Executa a cada 2 horas
     catchup=False,  # Adiciona este parâmetro para evitar a execução de tarefas passadas
     max_active_runs=1,  # Limita a DAG para uma execução ativa por vez
     tags=['sparkanos']
@@ -48,14 +48,14 @@ with DAG(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_bronze_produtividade',
-            command="spark-submit --driver-memory 2g --executor-memory 2g /app/107_insert_bronze_produtividade.py"
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/115_update_bronze_produtividade.py"
         )
 
         processing_silver_produtividade = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='processing_silver_produtividade',
-            command="spark-submit --driver-memory 2g --executor-memory 2g /app/108_insert_silver_produtividade.py"
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/116_update_silver_produtividade.py"
         )
 
         refinement_gold_produtividade = run_container(

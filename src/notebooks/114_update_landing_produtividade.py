@@ -4,7 +4,7 @@ from configs import configs
 def fetch_all_apis():
     responses = {}
 
-    for key, url in configs.tables_landing.items():
+    for key, url in configs.tables_landing_produtividade.items():
         try:
             response = requests.get(url)
             if response.status_code == 200:

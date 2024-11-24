@@ -1,105 +1,101 @@
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import lit, coalesce, col, current_date, year, month, lpad, concat
 import logging
 import os
-from datetime import datetime
-
-import pyspark
-from configs import configs
 from dotenv import load_dotenv
+from minio import Minio
+from minio.error import S3Error
+from delta.tables import DeltaTable
+from configs import configs
 from functions import functions as F
-from pyspark.sql import SparkSession
-from pyspark.sql import functions as func
 
+# Carregar variáveis de ambiente
 load_dotenv()
 
-HOST_ADDRESS_MINIO=os.getenv('HOST_ADDRESS_MINIO')
-MINIO_ACCESS_KEY=os.getenv('MINIO_ACCESS_KEY')
-MINIO_SECRET_KEY=os.getenv('MINIO_SECRET_KEY')
+# Variáveis do MinIO
+HOST_ADDRESS = os.getenv('HOST_ADDRESS')
+MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
+MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
 
+# Configurar sessão do Spark
+spark = SparkSession.builder \
+    .appName("incremental_update_to_bronze") \
+    .config("spark.hadoop.fs.s3a.endpoint", f"http://{HOST_ADDRESS}:9000") \
+    .config("spark.hadoop.fs.s3a.access.key", MINIO_ACCESS_KEY) \
+    .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY) \
+    .config("spark.hadoop.fs.s3a.path.style.access", "true") \
+    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+    .getOrCreate()
 
-def configure_spark():
-    """Configure and return a SparkSession."""
-    spark = (
-        SparkSession.builder.appName("update_bronze")
-        .config("spark.hadoop.fs.s3a.endpoint", f"http://{HOST_ADDRESS_MINIO}:9000")
-        .config("spark.hadoop.fs.s3a.access.key", MINIO_ACCESS_KEY)
-        .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY)
-        .config("spark.hadoop.fs.s3a.path.style.access", True)
-        .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-        .config(
-            "spark.hadoop.fs.s3a.aws.credentials.provider",
-            "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
-        )
-        .config("hive.metastore.uris", "thrift://metastore:9083")
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config(
-            "spark.sql.catalog.spark_catalog",
-            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-        )
-        .getOrCreate()
-    )
-    return spark
+# Configuração de logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.info("Starting incremental update...")
 
+# Caminhos e prefixos de entrada e saída
+input_prefix_layer_name = configs.prefix_layer_name['0']
+table_input_name = configs.lake_path['landing']
+output_prefix_layer_name = configs.prefix_layer_name['1']
+storage_output = configs.lake_path['bronze']
 
-def ingest_data():
+def process_table(table):
+    table_name = F.convert_table_name(table)
+    output_path = f'{storage_output}{output_prefix_layer_name}{table_name}'
+    
+    try:
+        # Carregar os dados da tabela de entrada
+        df_input_data = spark.read.format("parquet").load(f'{table_input_name}{input_prefix_layer_name}{table_name}')
+        
+        # Reparticionar para otimizar a escrita
+        df_input_data = df_input_data.repartition(100)
+        
+        # Adicionar metadados ao DataFrame
+        df_with_update_date = F.add_metadata(df_input_data)
 
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
-
-    logging.info("Starting ingestion...")
-
-    input_prefix_layer = configs.prefix_layer_name["0"]
-    storage_input = configs.lake_path["landing_adventure_works"]
-
-    output_prefix_layer = configs.prefix_layer_name["1"]
-    storage_output = configs.lake_path["bronze"]
-
-    for key, value in configs.tables_postgres_adventureworks.items():
-        table = value
-        table_name = F.convert_table_name(table)
-
-        input_path = f"{storage_input}{input_prefix_layer}{table_name}"
-        output_path = f"{storage_output}{output_prefix_layer}{table_name}"
-
-        try:
-            max_modified_date_destination = (
-                spark.read.format("delta")
-                .load(output_path)
-                .select(func.max("modifieddate").alias("max_modifieddate"))
-                .collect()[0]["max_modifieddate"]
+        # Verificar a existência da coluna 'data_abertura' e criar 'month_key'
+        if 'data_abertura' in df_with_update_date.columns:
+            df_with_month_key = df_with_update_date.withColumn(
+                'month_key',
+                concat(year(col('data_abertura').cast('date')), lpad(month(col('data_abertura').cast('date')), 2, '0'))
             )
-            # print(max_modified_date_destination)
-
-            df_input_data = (
-                spark.read.format("parquet")
-                .load(input_path)
-                .filter(
-                    func.col("modifieddate") > func.lit(max_modified_date_destination)
-                )
+        else:
+            # Se 'data_abertura' não existe, usa o ano e mês atuais como 'month_key'
+            df_with_month_key = df_with_update_date.withColumn(
+                'month_key',
+                concat(year(current_date()), lpad(month(current_date()), 2, '0'))
             )
+        
+        # Se a tabela Delta já existe, realizar merge (insert, update e delete)
+        if DeltaTable.isDeltaTable(spark, output_path):
+            delta_table = DeltaTable.forPath(spark, output_path)
+            
+            # Realizar merge para inserir, atualizar e excluir registros
+            delta_table.alias("target").merge(
+                df_with_month_key.alias("source"),
+                "target.id = source.id"  # Substitua 'id' pela coluna chave da sua tabela
+            ).whenMatchedUpdateAll() \
+             .whenNotMatchedInsertAll() \
+             .execute()
 
-            input_data_count = df_input_data.count()
-            logging.info(
-                f"Number os rows processed for table {table_name}: {input_data_count}"
-            )
+            logging.info(f"Table {table_name} successfully merged with new data at: {output_path}")
+        
+        else:
+            # Se a tabela não existe, crie uma nova tabela Delta
+            df_with_month_key.write.format("delta") \
+                .mode("overwrite") \
+                .option("overwriteSchema", "true") \
+                .partitionBy('month_key') \
+                .save(output_path)
 
-            if input_data_count == 0:
-                logging.info(f"No new data to process for table {table_name}.")
-                continue
+            logging.info(f"Table {table_name} created and data inserted at: {output_path}")
+    
+    except Exception as e:
+        logging.error(f'Error processing table {table_name}: {str(e)}')
 
-            df_with_update_date = F.add_metadata(df_input_data)
-            df_with_month_key = F.add_month_key(df_with_update_date, "modifieddate")
+# Processar todas as tabelas configuradas
+for key, value in configs.tables_api_isp_performance.items():
+    process_table(value)
 
-            df_with_month_key.write.format("delta").mode("append").partitionBy(
-                "month_key"
-            ).save(output_path)
-
-        except Exception as e:
-            logging.error(f"Error processing table {table_name}: {str(e)}.")
-
-    logging.info("Ingestion completed!")
-
-
-if __name__ == "__main__":
-    spark = configure_spark()
-    ingest_data()
+logging.info("Incremental update completed successfully!")

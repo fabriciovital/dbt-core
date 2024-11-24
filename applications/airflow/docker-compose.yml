@@ -117,8 +117,6 @@ services:
       retries: 5
       start_period: 5s
     restart: always
-    networks:
-      - sparkanos
 
   redis:
     # Redis is limited to 7.2-bookworm due to licencing change
@@ -133,8 +131,6 @@ services:
       retries: 50
       start_period: 30s
     restart: always
-    networks:
-      - sparkanos
 
   airflow-webserver:
     <<: *airflow-common
@@ -152,8 +148,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - sparkanos
 
   airflow-scheduler:
     <<: *airflow-common
@@ -169,8 +163,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - sparkanos
 
   airflow-worker:
     <<: *airflow-common
@@ -194,8 +186,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - sparkanos
 
   airflow-triggerer:
     <<: *airflow-common
@@ -211,8 +201,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - sparkanos
 
   airflow-init:
     <<: *airflow-common
@@ -277,8 +265,6 @@ services:
     user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
-    networks:
-      - sparkanos
 
   airflow-cli:
     <<: *airflow-common
@@ -292,8 +278,6 @@ services:
       - bash
       - -c
       - airflow
-    networks:
-      - sparkanos      
 
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
@@ -316,8 +300,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - sparkanos        
 
   docker-proxy:
     image: alpine:latest  
@@ -325,8 +307,6 @@ services:
     command: sh -c "apk add --no-cache socat && socat TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - sparkanos      
 
 volumes:
   postgres-db-volume:

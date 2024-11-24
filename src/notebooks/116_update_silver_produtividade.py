@@ -7,51 +7,61 @@ from functions import functions as F
 from dotenv import load_dotenv
 import os
 from minio import Minio
-from delta.tables import DeltaTable
 from minio.error import S3Error
+from delta.tables import DeltaTable
 
 # Carregar variáveis de ambiente
 load_dotenv()
 
+# Variáveis do MinIO
 HOST_ADDRESS = os.getenv('HOST_ADDRESS')
 MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
 
-def merge_data(spark, df_input_data, output_path, primary_key):
+def process_table(spark, query_input, output_path, table_name):
     try:
-        # Adicionar metadados aos dados
+        # Registrar hora de início
+        start_time = datetime.now()
+        logging.info(f'Starting process for {table_name} at {start_time}')
+        
+        # Consultar dados da tabela de entrada
+        df_input_data = spark.sql(query_input)
         df_with_update_date = F.add_metadata(df_input_data)
 
-        # Verificar se a tabela Delta já existe no caminho de destino
+        # Verificar se a tabela Delta já existe no output path
         if DeltaTable.isDeltaTable(spark, output_path):
             delta_table = DeltaTable.forPath(spark, output_path)
-
-            # Realizar o merge para aplicar inserções, atualizações e exclusões
+            
+            # Realizar merge para inserir novos registros e atualizar os existentes
             delta_table.alias("target").merge(
-                df_with_update_date.alias("source"),
-                f"target.{primary_key} = source.{primary_key}"
+                df_with_month_key.alias("source"),
+                "target.id = source.id AND (target.data_fechamento < source.data_fechamento OR target.id IS NULL)"  # Filtra registros novos ou atualizados
             ).whenMatchedUpdateAll() \
              .whenNotMatchedInsertAll() \
              .execute()
 
-            logging.info(f"Data merged successfully into {output_path}")
+            logging.info(f"Table {table_name} processed with merge logic for inserts and updates.")
+        
         else:
-            # Se a tabela Delta não existe, cria a partir dos dados de entrada
-            df_with_update_date.write \
-                .format("delta") \
-                .option("mergeSchema", "true") \
+            # Se a tabela não existe, crie uma nova tabela Delta e realize um insert
+            df_with_update_date.write.format("delta") \
                 .mode("overwrite") \
                 .option("overwriteSchema", "true") \
                 .partitionBy('month_key') \
                 .save(output_path)
-            logging.info(f"New Delta table created at {output_path}")
+
+            logging.info(f"{table_name} - Created new table with initial insert.")
+
+        # Registrar hora de término
+        end_time = datetime.now()
+        logging.info(f'Completed process for {table_name} at {end_time} - Duration: {end_time - start_time}')
 
     except Exception as e:
-        logging.error(f"Error during merge operation at '{output_path}': {str(e)}")
+        logging.error(f"Error processing table {table_name}: {str(e)}")
 
 if __name__ == "__main__":
     spark = SparkSession.builder \
-            .appName("process_bronze_to_gold_isp_performance") \
+            .appName("process_bronze_to_silver_isp_performance") \
             .config("spark.hadoop.fs.s3a.endpoint", f"http://{HOST_ADDRESS}:9000") \
             .config("spark.hadoop.fs.s3a.access.key", MINIO_ACCESS_KEY) \
             .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY) \
@@ -66,29 +76,26 @@ if __name__ == "__main__":
             .config("spark.memory.fraction", "0.8") \
             .config("spark.sql.shuffle.partitions", "50") \
             .getOrCreate()
-
+    
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    logging.info("Starting processing from bronze to gold...")
+    logging.info("Starting processing from bronze to silver...")
 
-    input_prefix_layer_name = configs.prefix_layer_name['2']  # silver layer
-    input_path = configs.lake_path['silver']
+    input_prefix_layer_name = configs.prefix_layer_name['1']  # bronze layer
+    input_path = configs.lake_path['bronze']
 
-    output_prefix_layer_name = configs.prefix_layer_name['3']  # gold layer
-    output_path = configs.lake_path['gold']
+    output_prefix_layer_name = configs.prefix_layer_name['2']  # silver layer
+    output_path = configs.lake_path['silver']
 
     try:
-        for table_name, query_input in configs.tables_gold.items():
+        for table_name, query_input in configs.tables_silver_produtividade.items():
             table_name = F.convert_table_name(table_name)
-            query_input = F.get_query(table_name, input_path, input_prefix_layer_name, configs.tables_gold)        
-
+            query_input = F.get_query(table_name, input_path, input_prefix_layer_name, configs.tables_silver_produtividade)        
             storage_output = f'{output_path}{output_prefix_layer_name}{table_name}'
             
-            # Processar dados e realizar merge
-            df_input_data = spark.sql(query_input)
-            merge_data(spark, df_input_data, storage_output, primary_key="id")  # Ajuste 'id' para a chave primária específica de cada tabela
-            
-        logging.info("Process to gold completed!")
-
+            process_table(spark, query_input, storage_output, table_name)
+        
+        logging.info("Process to silver completed!")
+    
     except Exception as e:
         logging.error(f'Error processing table: {str(e)}')

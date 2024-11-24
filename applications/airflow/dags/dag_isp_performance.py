@@ -48,14 +48,14 @@ with DAG(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_bronze',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/107_insert_bronze.py"
+            command="spark-submit --driver-memory 1g --executor-memory 1g /app/115_update_bronze.py"
         )
 
         processing_silver = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='processing_silver',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/108_insert_silver.py"
+            command="spark-submit --driver-memory 1g --executor-memory 1g /app/116_update_silver.py"
         )
 
         refinement_gold = run_container(

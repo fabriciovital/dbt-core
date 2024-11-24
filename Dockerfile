@@ -7,7 +7,7 @@ USER root
 
 RUN mkdir -p /app
 
-RUN pip install --no-cache-dir python-dotenv
+RUN pip install --no-cache-dir python-dotenv minio
 
 # Setup App Adventure Works
 COPY src/notebooks/configs /app/configs/
@@ -23,6 +23,10 @@ COPY src/notebooks/108_insert_silver.py /app/
 COPY src/notebooks/108_insert_silver_produtividade.py /app/
 COPY src/notebooks/109_insert_gold.py /app/
 COPY src/notebooks/109_insert_gold_produtividade.py /app/
+COPY src/notebooks/115_update_bronze.py /app/
+COPY src/notebooks/115_update_bronze_produtividade.py /app/
+COPY src/notebooks/116_update_silver.py /app/
+COPY src/notebooks/116_update_silver_produtividade.py /app/
 
 # Spark Configs
 COPY applications/spark/conf/env /env/
