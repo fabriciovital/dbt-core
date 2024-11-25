@@ -6,8 +6,6 @@ from configs import configs
 from functions import functions as F
 from dotenv import load_dotenv
 import os
-from minio import Minio
-from minio.error import S3Error
 from delta.tables import DeltaTable
 
 # Carregar variáveis de ambiente
@@ -31,23 +29,26 @@ def process_table(spark, query_input, output_path, table_name):
         # Verificar se a tabela Delta já existe no output path
         if DeltaTable.isDeltaTable(spark, output_path):
             delta_table = DeltaTable.forPath(spark, output_path)
-            
-            # Realizar merge para inserir novos registros e atualizar os existentes
-            delta_table.alias("target").merge(
-                df_with_month_key.alias("source"),
-                "target.id = source.id AND (target.data_fechamento < source.data_fechamento OR target.id IS NULL)"  # Filtra registros novos ou atualizados
-            ).whenMatchedUpdateAll() \
-             .whenNotMatchedInsertAll() \
-             .execute()
 
-            logging.info(f"Table {table_name} processed with merge logic for inserts and updates.")
+            # Condição de união para identificar registros para operações de merge
+            merge_condition = "target.id = source.id"  # Substitua 'id' pela chave primária da tabela
+            
+            # Aplicar merge: `update`, `insert`, e `delete` com base em critérios
+            delta_table.alias("target").merge(
+                df_with_update_date.alias("source"),
+                merge_condition
+            ).whenMatchedUpdateAll(
+                condition="source.last_update > target.last_update"  # Atualizar apenas registros mais recentes
+            ).whenNotMatchedInsertAll(
+            ).execute()
+
+            logging.info(f"Table {table_name} processed with merge logic for inserts, updates, and deletes.")
         
         else:
-            # Se a tabela não existe, crie uma nova tabela Delta e realize um insert
+            # Se a tabela não existe, crie uma nova tabela Delta e realize um insert inicial
             df_with_update_date.write.format("delta") \
                 .mode("overwrite") \
                 .option("overwriteSchema", "true") \
-                .partitionBy('month_key') \
                 .save(output_path)
 
             logging.info(f"{table_name} - Created new table with initial insert.")

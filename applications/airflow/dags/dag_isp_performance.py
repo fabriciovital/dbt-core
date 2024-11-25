@@ -41,28 +41,28 @@ with DAG(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_parquet',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/106_insert_landing.py"
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/114_update_landing.py"
         )
 
         ingestion_bronze = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_bronze',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/115_update_bronze.py"
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/115_update_bronze.py"
         )
 
         processing_silver = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='processing_silver',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/116_update_silver.py"
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/116_update_silver.py"
         )
 
         refinement_gold = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='refinement_gold',
-            command="spark-submit --driver-memory 1g --executor-memory 1g /app/109_insert_gold.py"
+            command="spark-submit --driver-memory 2g --executor-memory 2g /app/117_update_gold.py"
         )
 
     ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold

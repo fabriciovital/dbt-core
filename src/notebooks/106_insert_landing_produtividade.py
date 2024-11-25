@@ -18,6 +18,5 @@ def fetch_all_apis():
 
     return responses
 
-# Exemplo de uso
 api_responses = fetch_all_apis()
 print("Respostas das APIs:", api_responses)

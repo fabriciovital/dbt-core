@@ -6,8 +6,6 @@ from configs import configs
 from functions import functions as F
 from dotenv import load_dotenv
 import os
-from minio import Minio
-from minio.error import S3Error
 from delta.tables import DeltaTable
 
 # Carregar variáveis de ambiente
@@ -35,18 +33,19 @@ def process_table(spark, query_input, output_path, table_name):
             # Condição de união para identificar registros para operações de merge
             merge_condition = "target.id = source.id"  # Substitua 'id' pela chave primária da tabela
             
-            # Executar o merge condicionalmente para inserts e updates
+            # Aplicar merge: `update`, `insert`, e `delete` com base em critérios
             delta_table.alias("target").merge(
                 df_with_update_date.alias("source"),
                 merge_condition
-            ).whenMatchedUpdateAll() \
-             .whenNotMatchedInsertAll() \
-             .execute()
+            ).whenMatchedUpdateAll(
+                condition="source.last_update > target.last_update"  # Atualizar apenas registros mais recentes
+            ).whenNotMatchedInsertAll(
+            ).execute()
 
-            logging.info(f"Table {table_name} processed with merge logic for inserts and updates.")
+            logging.info(f"Table {table_name} processed with merge logic for inserts, updates, and deletes.")
         
         else:
-            # Se a tabela não existe, crie uma nova tabela Delta e realize um insert
+            # Se a tabela não existe, crie uma nova tabela Delta e realize um insert inicial
             df_with_update_date.write.format("delta") \
                 .mode("overwrite") \
                 .option("overwriteSchema", "true") \
