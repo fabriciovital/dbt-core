@@ -53,6 +53,10 @@ def process_table(spark, query_input, output_path, table_name):
 
             logging.info(f"{table_name} - Created new table with initial insert.")
 
+        # Executar VACUUM para remover versões antigas
+        spark.sql(f"VACUUM '{output_path}' RETAIN 0 HOURS")
+        logging.info(f"VACUUM completed for {table_name} - Old versions removed.")
+        
         # Registrar hora de término
         end_time = datetime.now()
         logging.info(f'Completed process for {table_name} at {end_time} - Duration: {end_time - start_time}')

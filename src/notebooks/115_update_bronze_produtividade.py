@@ -116,6 +116,10 @@ def process_table_with_merge(table):
             # Atualizar a tabela Delta com o comando REFRESH
             spark.sql(f"REFRESH TABLE delta.`{delta_table_path}`")
             
+            # Limpar versões antigas imediatamente
+            spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+            logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")            
+            
             # Obter e registrar operações realizadas
             last_operation = delta_table.history(1).select("operationMetrics").collect()[0][0]
             num_inserted = last_operation.get("numInsertedRows", 0)
@@ -132,6 +136,10 @@ def process_table_with_merge(table):
 
             # Atualizar a tabela Delta com o comando REFRESH
             spark.sql(f"REFRESH TABLE delta.`{delta_table_path}`")
+            
+            # Limpar versões antigas imediatamente
+            spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+            logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
             
             logging.info(f'Table {table_name}: Created new Delta table.')
         
