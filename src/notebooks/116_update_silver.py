@@ -54,10 +54,10 @@ def process_table(spark, query_input, output_path, table_name):
 
             logging.info(f"{table_name} - Created new table with initial insert.")
 
-        # Executar VACUUM para remover versões antigas
-        spark.sql(f"VACUUM '{output_path}' RETAIN 0 HOURS")
-        logging.info(f"VACUUM completed for {table_name} - Old versions removed.")
-            
+        # Limpar versões antigas imediatamente
+        spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
+
         # Registrar hora de término
         end_time = datetime.now()
         logging.info(f'Completed process for {table_name} at {end_time} - Duration: {end_time - start_time}')
@@ -82,6 +82,9 @@ if __name__ == "__main__":
             .config("spark.memory.fraction", "0.8") \
             .config("spark.sql.shuffle.partitions", "50") \
             .getOrCreate()
+    
+    # Desabilitar a verificação de retenção de duração no Delta Lake
+    spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
     
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 

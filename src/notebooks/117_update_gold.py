@@ -56,11 +56,9 @@ def process_table(spark, df_input_data, output_path, primary_key=None):
                 .save(output_path)
             logging.info(f"Table overwritten successfully at {output_path}")
 
-        # Aplicar VACUUM após operação para remover versões antigas
-        if DeltaTable.isDeltaTable(spark, output_path):
-            logging.info(f"Applying VACUUM on table at {output_path}")
-            spark.sql(f"VACUUM '{output_path}' RETAIN 0 HOURS")
-            logging.info(f"VACUUM completed for {output_path}")
+        # Limpar versões antigas imediatamente
+        spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
             
     except Exception as e:
         logging.error(f"Error processing table at '{output_path}': {str(e)}")
@@ -82,7 +80,10 @@ if __name__ == "__main__":
             .config("spark.memory.fraction", "0.8") \
             .config("spark.sql.shuffle.partitions", "50") \
             .getOrCreate()
-
+    
+    # Desabilitar a verificação de retenção de duração no Delta Lake
+    spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
+    
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     logging.info("Starting processing from silver to gold...")

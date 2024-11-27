@@ -35,6 +35,9 @@ spark = SparkSession.builder \
     .config("spark.sql.shuffle.partitions", "50") \
     .getOrCreate()
 
+# Desabilitar a verificação de retenção de duração no Delta Lake
+spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
+
 # Configuração de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Starting conversions from Minio to Minio Delta with merge logic...")
@@ -87,10 +90,9 @@ def process_table_with_merge(table):
                 .partitionBy('month_key') \
                 .save(delta_table_path)
         
-        # Executar o VACUUM para limpar versões antigas
-        delta_table = DeltaTable.forPath(spark, delta_table_path)
-        delta_table.vacuum(retentionHours=0.01)  # Limpa arquivos antigos imediatamente
-        logging.info(f"VACUUM executado para a tabela: {delta_table_path}")
+            # Limpar versões antigas imediatamente
+            spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+            logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
 
     except Exception as e:
         logging.error(f'Erro ao processar a tabela {table_name}: {str(e)}')
