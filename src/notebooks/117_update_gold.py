@@ -1,14 +1,10 @@
 import pyspark
 from pyspark.sql import SparkSession
 import logging
-from datetime import datetime
 from configs import configs
 from functions import functions as F
 from dotenv import load_dotenv
 import os
-from minio import Minio
-from delta.tables import DeltaTable
-from minio.error import S3Error
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -17,49 +13,27 @@ HOST_ADDRESS = os.getenv('HOST_ADDRESS')
 MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
 
-def process_table(spark, df_input_data, output_path, primary_key=None):
+def process_table(spark, df_input_data, output_path):
     """
-    Processa uma tabela com merge (se chave primária fornecida) ou sobrescrita direta (caso contrário).
+    Processa uma tabela realizando apenas a sobrescrita direta.
     """
     try:
         # Adicionar metadados
         df_with_update_date = F.add_metadata(df_input_data)
-
-        if primary_key:
-            # Realizar o merge para tabelas com chave primária
-            if DeltaTable.isDeltaTable(spark, output_path):
-                delta_table = DeltaTable.forPath(spark, output_path)
-                delta_table.alias("target").merge(
-                    df_with_update_date.alias("source"),
-                    f"target.{primary_key} = source.{primary_key}"
-                ).whenMatchedUpdateAll() \
-                 .whenNotMatchedInsertAll() \
-                 .execute()
-                logging.info(f"Data merged successfully into {output_path}")
-            else:
-                # Criar nova tabela Delta
-                df_with_update_date.write \
-                    .format("delta") \
-                    .option("mergeSchema", "true") \
-                    .option("overwriteSchema", "true") \
-                    .mode("overwrite") \
-                    .partitionBy('month_key') \
-                    .save(output_path)
-                logging.info(f"New Delta table created at {output_path}")
-        else:
-            # Sobrescrever diretamente para tabelas sem chave primária
-            df_with_update_date.write \
-                .format("delta") \
-                .option("overwriteSchema", "true") \
-                .mode("overwrite") \
-                .partitionBy('month_key') \
-                .save(output_path)
-            logging.info(f"Table overwritten successfully at {output_path}")
-
-        # Limpar versões antigas imediatamente
-        spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
-        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
-            
+        
+        # Sobrescrever diretamente
+        df_with_update_date.write \
+            .format("delta") \
+            .option("overwriteSchema", "true") \
+            .mode("overwrite") \
+            .partitionBy('month_key') \
+            .save(output_path)
+        logging.info(f"Table overwritten successfully at {output_path}")
+        
+        # Rodar VACUUM para remover versões antigas imediatamente
+        spark.sql(f"VACUUM delta.`{output_path}` RETAIN 0 HOURS")
+        logging.info(f"Old versions of Delta table at '{output_path}' have been removed (VACUUM).")
+        
     except Exception as e:
         logging.error(f"Error processing table at '{output_path}': {str(e)}")
 
@@ -71,7 +45,6 @@ if __name__ == "__main__":
             .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY) \
             .config("spark.hadoop.fs.s3a.path.style.access", True) \
             .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-            .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
             .config("hive.metastore.uris", "thrift://metastore:9083") \
             .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
             .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
@@ -104,11 +77,8 @@ if __name__ == "__main__":
             # Carregar dados da tabela
             df_input_data = spark.sql(query_input)
             
-            # Verificar se a tabela possui a coluna "id"
-            if "id" in df_input_data.columns:
-                process_table(spark, df_input_data, storage_output, primary_key="id")
-            else:
-                process_table(spark, df_input_data, storage_output)  # Sobrescreve sem merge
+            # Processar a tabela com sobrescrita
+            process_table(spark, df_input_data, storage_output)
             
         logging.info("Process to gold completed!")
 

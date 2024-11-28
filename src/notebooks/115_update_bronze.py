@@ -40,7 +40,7 @@ spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logging.info("Starting conversions from Minio to Minio Delta with merge logic...")
+logging.info("Starting conversions from Minio to Minio Delta with full load...")
 
 # Parâmetros de entrada e saída
 input_prefix_layer_name = configs.prefix_layer_name['0']
@@ -48,8 +48,8 @@ table_input_name = configs.lake_path['landing']
 output_prefix_layer_name = configs.prefix_layer_name['1']
 storage_output = configs.lake_path['bronze']
 
-# Função para processar as tabelas com merge (insert, update, delete)
-def process_table_with_merge(table):
+# Função para processar as tabelas com carga full
+def process_table_full_load(table):
     table_name = F.convert_table_name(table)
     
     try:
@@ -62,43 +62,40 @@ def process_table_with_merge(table):
         df_input_data = df_input_data.repartition(100)
         df_with_metadata = F.add_metadata(df_input_data)
         
-        # Adicionar coluna 'month_key'
-        df_with_month_key = df_with_metadata.withColumn(
-            'month_key',
-            concat(
-                year(col('data_abertura').cast('date')), 
-                lpad(month(col('data_abertura').cast('date')), 2, '0')
+        # Adicionar coluna 'month_key' considerando `data_abertura` ou a data atual
+        if 'data_abertura' in df_with_metadata.columns:
+            df_with_month_key = df_with_metadata.withColumn(
+                'month_key',
+                concat(
+                    year(coalesce(col('data_abertura').cast('date'), current_date())), 
+                    lpad(month(coalesce(col('data_abertura').cast('date'), current_date())), 2, '0')
+                )
             )
-        )
-        
-        # Verificar se a tabela Delta já existe
-        if DeltaTable.isDeltaTable(spark, delta_table_path):
-            delta_table = DeltaTable.forPath(spark, delta_table_path)
-            
-            # Aplicar o merge (insert, update, delete)
-            delta_table.alias("target").merge(
-                source=df_with_month_key.alias("source"),
-                condition="target.id = source.id"
-            ).whenMatchedUpdateAll(
-                condition="source.last_update > target.last_update"
-            ).whenNotMatchedInsertAll().execute()
         else:
-            # Criar nova tabela Delta
-            df_with_month_key.write.format("delta") \
-                .mode("overwrite") \
-                .option("mergeSchema", "true") \
-                .partitionBy('month_key') \
-                .save(delta_table_path)
+            df_with_month_key = df_with_metadata.withColumn(
+                'month_key',
+                concat(
+                    year(current_date()),
+                    lpad(month(current_date()), 2, '0')
+                )
+            )
         
-            # Limpar versões antigas imediatamente
-            spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
-            logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
+        # Sobrescrever a tabela Delta com os dados completos
+        df_with_month_key.write.format("delta") \
+            .mode("overwrite") \
+            .option("mergeSchema", "true") \
+            .partitionBy('month_key') \
+            .save(delta_table_path)
+        
+        # Limpar versões antigas imediatamente
+        spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
 
     except Exception as e:
         logging.error(f'Erro ao processar a tabela {table_name}: {str(e)}')
 
 # Processar todas as tabelas configuradas
 for key, value in configs.tables_api_isp_performance.items():
-    process_table_with_merge(value)
+    process_table_full_load(value)
 
-logging.info("Processamento concluído com limpeza imediata de versões anteriores!")
+logging.info("Processamento concluído com carga full e limpeza imediata de versões anteriores!")

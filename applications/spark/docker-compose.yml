@@ -21,10 +21,10 @@ services:
       - ./conf/env:/env
       - ${NOTEBOOK_PATH}:/home/user/work
     ports:
-      - 8889:8888 # Jupyter
-      - 8083:8080 # Spark UI
-      - 4040:4040 # Spark UI Jobs
-      - 7077:7077 # Default port for communication
+      - 127.0.0.1:8889:8888 # Jupyter
+      - 127.0.0.1:8083:8080 # Spark UI
+      - 127.0.0.1:4040:4040 # Spark UI Jobs
+      - 127.0.0.1:7077:7077 # Default port for communication
 
   spark-worker1:
     <<: *spark-common
@@ -40,8 +40,8 @@ services:
       - ./conf/util:/util
       - ./conf/env:/env
     ports:
-      - 5043:4040
-      - 5044:4041
+      - 127.0.0.1:5043:4040
+      - 127.0.0.1:5044:4041
     depends_on:
       - spark-master
 
@@ -59,8 +59,8 @@ services:
       - ./conf/util:/util
       - ./conf/env:/env
     ports:
-      - 5045:4041
-      - 5046:4042
+      - 127.0.0.1:5045:4041
+      - 127.0.0.1:5046:4042
     depends_on:
       - spark-master
 

@@ -26,7 +26,7 @@ services:
     expose:
       - 3306
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
      - ./docker-volume/db-data:/var/lib/mysql
     networks:
@@ -47,8 +47,8 @@ services:
     networks:
       - sparkanos
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9300:9300"
     healthcheck:
       test: "curl -s http://170.79.87.9:9200/_cluster/health?pretty | grep status | grep -qE 'green|yellow' || exit 1"
       interval: 15s
@@ -460,8 +460,8 @@ services:
       - 8585
       - 8586
     ports:
-      - "8585:8585"
-      - "8586:8586"
+      - "127.0.0.1:8585:8585"
+      - "127.0.0.1:8586:8586"
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -510,7 +510,7 @@ services:
     expose:
       - 8087
     ports:
-      - "8087:8080"
+      - "127.0.0.1:8087:8080"
     networks:
       - sparkanos
     volumes:
