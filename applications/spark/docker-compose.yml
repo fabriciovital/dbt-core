@@ -21,7 +21,7 @@ services:
       - ./conf/env:/env
       - ${NOTEBOOK_PATH}:/home/user/work
     ports:
-      - 127.0.0.1:8889:8888 # Jupyter
+      #- 127.0.0.1:8889:8888 # Jupyter
       - 127.0.0.1:8083:8080 # Spark UI
       - 127.0.0.1:4040:4040 # Spark UI Jobs
       - 127.0.0.1:7077:7077 # Default port for communication
