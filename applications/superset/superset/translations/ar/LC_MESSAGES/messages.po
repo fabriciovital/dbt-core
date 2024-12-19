@@ -8112,7 +8112,7 @@ msgstr "موضع تسمية العقدة الوسيطة على الشجرة"
 msgid "Position of row level subtotal"
 msgstr "موضع المجموع الفرعي لمستوى الصف"
 
-msgid "Powered by Apache Superset"
+msgid "Powered by Nexus IT Consulting"
 msgstr "مدعوم من أباتشي سوبيرسيت"
 
 msgid "Pre-filter"

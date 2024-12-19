@@ -527,7 +527,7 @@ const RightMenu = ({
               <div className="about-section">
                 {navbarRight.show_watermark && (
                   <div css={versionInfoStyles}>
-                    {t('Powered by Apache Superset')}
+                    {t('Powered by Nexus IT Consulting')}
                   </div>
                 )}
                 {navbarRight.version_string && (
