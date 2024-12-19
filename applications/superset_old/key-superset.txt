@@ -1,2 +1,0 @@
-username: admin
-password: p9dmzYqZ_MtA
