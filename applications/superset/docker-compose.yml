@@ -56,8 +56,7 @@ services:
   superset:
     env_file:
       - docker/.env # default
-    build:
-      <<: *common-build
+    image: fabriciovital/data_engineering_stack:latest
     container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
