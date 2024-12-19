@@ -104,6 +104,44 @@ WEBDRIVER_BASEURL = "http://superset:8088/"  # When using docker compose baseurl
 WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 SQLLAB_CTAS_NO_LIMIT = True
 
+# Configurações de idioma
+LANGUAGES = {
+    'en': {'flag': 'us', 'name': 'English'},
+    'pt_BR': {'flag': 'br', 'name': 'Português (Brasil)'}
+}
+
+BABEL_DEFAULT_LOCALE = 'pt_BR'
+
+# Habilitar CORS
+ENABLE_CORS = True
+
+# Configurações do CORS
+CORS_OPTIONS = {
+    'supports_credentials': True,
+    'allow_headers': ['*'],
+    'resources': ['*'],
+    'origins': ['*']
+}
+
+# Configurações de Feature Flags
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
+    "EMBEDDED_SUPERSET": True  # Requirement
+}
+
+# Configurações de Guest Role e Token
+GUEST_ROLE_NAME = "Admin"  # Ajustar permissões de função se ocorrer erro 403
+GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutos, ou ajuste para um tempo maior
+
+# Visual Customizations
+APP_NAME = "Nexus Analytics"
+APP_ICON="/static/assets/images/nexus_logo.png"
+APP_ICON_WIDTH = 200
+# Path for routing when APP_ICON image is clicked
+LOGO_TARGET_PATH = '/' # Forwards to /superset/welcome/home
+LOGO_TOOLTIP = "Go Home" # Text displayed when hovering.
+FAVICONS = [{"href": "/static/assets/images/nexus_logo.png"}]
+
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
