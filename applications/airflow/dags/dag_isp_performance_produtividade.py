@@ -17,7 +17,6 @@ def run_container(dag, image, container_name, command):
         container_name=container_name,
         api_version='auto',
         auto_remove=True,
-        remove=True,
         command=command,
         docker_url="tcp://docker-proxy:2375",
         network_mode="sparkanos",

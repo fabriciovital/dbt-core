@@ -19,7 +19,6 @@ def run_container(dag, image, container_name, command):
         container_name=container_name,
         api_version='auto',
         auto_remove=True,
-        remove=True,
         command=command,
         docker_url="tcp://docker-proxy:2375",
         network_mode="sparkanos",
@@ -107,6 +106,13 @@ with DAG(
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/117_update_gold.py"
             )
+        )
+
+        # Tarefa de limpeza de volumes não utilizados
+        clean_volumes_task = PythonOperator(
+            task_id="clean_unused_volumes",
+            python_callable=clean_unused_volumes,
+            dag=dag,
         )
 
     # Dependência entre as tarefas
