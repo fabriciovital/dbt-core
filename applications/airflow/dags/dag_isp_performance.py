@@ -1,9 +1,7 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
-from airflow.operators.python_operator import PythonOperator
 from airflow.utils.task_group import TaskGroup
-import docker
 
 default_args = {
     'owner': 'Fabricio Vital',
@@ -26,12 +24,6 @@ def run_container(dag, image, container_name, command):
         do_xcom_push=False,
         dag=dag
     )
-
-# Função para limpar volumes não utilizados
-def clean_unused_volumes():
-    client = docker.from_env()
-    client.volumes.prune()  # Remove volumes não utilizados
-    print("Unused volumes removed successfully!")
 
 # Definição da DAG
 with DAG(
@@ -116,6 +108,6 @@ with DAG(
         )
 
     # Dependência entre as tarefas
-    ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold >> clean_volumes_task
+    ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold
 
 etl
