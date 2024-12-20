@@ -62,9 +62,9 @@ with DAG(
             container_name='ingestion_bronze_produtividade',
             command=(
                 "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--num-executors 2 "
+                "--driver-memory 6g "
+                "--executor-memory 6g "
+                "--num-executors 4 "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/115_update_bronze_produtividade.py"
             )
