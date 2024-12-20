@@ -62,8 +62,8 @@ with DAG(
             container_name='ingestion_bronze_produtividade',
             command=(
                 "spark-submit "
-                "--driver-memory 3g "
-                "--executor-memory 3g "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
                 "--num-executors 2 "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/115_update_bronze_produtividade.py"
@@ -92,8 +92,8 @@ with DAG(
             container_name='refinement_gold_produtividade',
             command=(
                 "spark-submit "
-                "--driver-memory 2g "
-                "--executor-memory 2g "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
                 "--num-executors 2 "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/117_update_gold_produtividade.py"
