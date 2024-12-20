@@ -55,7 +55,7 @@ def process_table(spark, query_input, output_path, table_name):
             logging.info(f"{table_name} - Created new table with initial insert.")
 
         # Limpar versões antigas imediatamente
-        spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+        spark.sql(f"VACUUM delta.`{output_path}` RETAIN 0 HOURS")
         logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
 
         # Registrar hora de término

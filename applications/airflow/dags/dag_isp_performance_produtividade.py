@@ -6,7 +6,7 @@ from airflow.utils.task_group import TaskGroup
 default_args = {
     'owner': 'Fabricio Vital',
     'depends_on_past': False,
-    'retries': 1,  # Número de tentativas em caso de falha
+    'retries': 1,
 }
 
 # Função para criar tarefas com DockerOperator
@@ -17,11 +17,12 @@ def run_container(dag, image, container_name, command):
         container_name=container_name,
         api_version='auto',
         auto_remove=True,
+        remove=True,
         command=command,
         docker_url="tcp://docker-proxy:2375",
         network_mode="sparkanos",
-        mount_tmp_dir=False,  # Evita montar o diretório temporário
-        do_xcom_push=False,  # Evita salvar logs desnecessários no banco de metadados
+        mount_tmp_dir=False,
+        do_xcom_push=False,
         dag=dag
     )
 
@@ -29,11 +30,11 @@ def run_container(dag, image, container_name, command):
 with DAG(
     'isp_performance_produtividade',
     default_args=default_args,
-    start_date=datetime(2024, 11, 4),  # Data fixa para evitar catchup desnecessário
-    schedule_interval='*/10 * * * *',  # Executa a cada 10 minutos
-    catchup=False,  # Não executa tarefas passadas
-    max_active_runs=1,  # Limita a DAG para uma execução ativa por vez
-    concurrency=1,  # Limita o número de tarefas simultâneas
+    start_date=datetime(2024, 11, 4),
+    schedule_interval='*/10 * * * *',
+    catchup=False,
+    max_active_runs=1,
+    concurrency=1,
     tags=['sparkanos']
 ) as dag:
 

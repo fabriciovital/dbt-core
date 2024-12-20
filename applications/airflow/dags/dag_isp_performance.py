@@ -1,12 +1,14 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.python_operator import PythonOperator
 from airflow.utils.task_group import TaskGroup
+import docker
 
 default_args = {
     'owner': 'Fabricio Vital',
     'depends_on_past': False,
-    'retries': 1,  # Define o número de tentativas em caso de falha
+    'retries': 1,
 }
 
 # Função para criar tarefas com DockerOperator
@@ -17,23 +19,30 @@ def run_container(dag, image, container_name, command):
         container_name=container_name,
         api_version='auto',
         auto_remove=True,
+        remove=True,
         command=command,
         docker_url="tcp://docker-proxy:2375",
         network_mode="sparkanos",
-        mount_tmp_dir=False,  # Evita montar o diretório temporário
-        do_xcom_push=False,  # Evita salvar logs desnecessários no banco de metadados
+        mount_tmp_dir=False,
+        do_xcom_push=False,
         dag=dag
     )
+
+# Função para limpar volumes não utilizados
+def clean_unused_volumes():
+    client = docker.from_env()
+    client.volumes.prune()  # Remove volumes não utilizados
+    print("Unused volumes removed successfully!")
 
 # Definição da DAG
 with DAG(
     'isp_performance',
     default_args=default_args,
-    start_date=datetime(2024, 11, 4),  # Start fixo para evitar catchup desnecessário
-    schedule_interval='*/5 * * * *',  # Executa a cada 5 minutos
-    catchup=False,  # Não executa tarefas passadas
-    max_active_runs=1,  # Limita a DAG para uma execução ativa por vez
-    concurrency=1,  # Limita o número de tarefas simultâneas
+    start_date=datetime(2024, 11, 4),
+    schedule_interval='*/5 * * * *',
+    catchup=False,
+    max_active_runs=1,
+    concurrency=1,
     tags=['sparkanos']
 ) as dag:
 
@@ -101,6 +110,6 @@ with DAG(
         )
 
     # Dependência entre as tarefas
-    ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold
+    ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold >> clean_volumes_task
 
 etl

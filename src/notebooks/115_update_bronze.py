@@ -9,7 +9,6 @@ from configs import configs
 from functions import functions as F
 from dotenv import load_dotenv
 import os
-import boto3
 from pyspark.sql.utils import AnalysisException
 
 # Carregar variáveis de ambiente
