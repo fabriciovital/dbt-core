@@ -49,7 +49,6 @@ with DAG(
                 "spark-submit "
                 "--driver-memory 2g "
                 "--executor-memory 2g "
-                "--num-executors 2 "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/114_update_landing.py"
             )
@@ -62,9 +61,8 @@ with DAG(
             container_name='ingestion_bronze',
             command=(
                 "spark-submit "
-                "--driver-memory 2g "
-                "--executor-memory 2g "
-                "--num-executors 2 "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/115_update_bronze.py"
             )
@@ -77,9 +75,8 @@ with DAG(
             container_name='processing_silver',
             command=(
                 "spark-submit "
-                "--driver-memory 2g "
-                "--executor-memory 2g "
-                "--num-executors 2 "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/116_update_silver.py"
             )
@@ -92,9 +89,8 @@ with DAG(
             container_name='refinement_gold',
             command=(
                 "spark-submit "
-                "--driver-memory 2g "
-                "--executor-memory 2g "
-                "--num-executors 2 "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/117_update_gold.py"
             )
