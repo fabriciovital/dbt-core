@@ -30,7 +30,7 @@ with DAG(
     'isp_performance_full_refresh',
     default_args=default_args,
     start_date=datetime(2024, 11, 4),
-    schedule_interval='*/10 * * * *',
+    schedule_interval='*/5 * * * *',
     catchup=False,
     max_active_runs=1,
     concurrency=1,
@@ -38,13 +38,13 @@ with DAG(
 ) as dag:
 
     # Agrupamento das tarefas no TaskGroup
-    with TaskGroup(group_id="isp_performance_produtividade") as etl:
+    with TaskGroup(group_id="isp_performance_full_refresh") as etl:
 
         # Task: Ingestão de dados para parquet
-        ingestion_parquet_produtividade = run_container(
+        ingestion_parquet_full_refresh = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='ingestion_parquet_produtividade',
+            container_name='ingestion_parquet_full_refresh',
             command=(
                 "spark-submit "
                 "--driver-memory 4g "
@@ -55,48 +55,20 @@ with DAG(
         )
 
         # Task: Ingestão de dados para bronze
-        ingestion_bronze_produtividade = run_container(
+        ingestion_bronze_full_refresh = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='ingestion_bronze_produtividade',
+            container_name='ingestion_bronze_update',
             command=(
                 "spark-submit "
                 "--driver-memory 4g "
                 "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
-                "/app/107_insert_bronze.py"
-            )
-        )
-
-        # Task: Processamento para camada silver
-        processing_silver_produtividade = run_container(
-            dag=dag,
-            image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='processing_silver_produtividade',
-            command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/108_insert_silver.py"
-            )
-        )
-
-        # Task: Refinamento para camada gold
-        refinement_gold_produtividade = run_container(
-            dag=dag,
-            image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='refinement_gold_produtividade',
-            command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/109_insert_gold.py"
+                "/app/115_update_bronze.py"
             )
         )
 
     # Dependência entre as tarefas
-    ingestion_parquet_produtividade >> ingestion_bronze_produtividade >> processing_silver_produtividade >> refinement_gold_produtividade
+    ingestion_parquet_full_refresh >> ingestion_bronze_full_refresh
 
 etl

@@ -38,65 +38,37 @@ with DAG(
 ) as dag:
 
     # Agrupamento das tarefas no TaskGroup
-    with TaskGroup(group_id="isp_performance") as etl:
+    with TaskGroup(group_id="isp_performance_update") as etl:
 
-        # Task: Ingestão de dados para parquet
-        ingestion_parquet = run_container(
+        # Task: Processamento para camada silver
+        processing_silver_update = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='ingestion_parquet',
+            container_name='processing_silver_update',
             command=(
                 "spark-submit "
                 "--driver-memory 4g "
                 "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/114_update_landing.py"
-            )
-        )
-
-        # Task: Ingestão de dados para bronze
-        ingestion_bronze = run_container(
-            dag=dag,
-            image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='ingestion_bronze',
-            command=(
-                "spark-submit "
-                "--driver-memory 6g "
-                "--executor-memory 6g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/115_update_bronze.py"
-            )
-        )
-
-        # Task: Processamento para camada silver
-        processing_silver = run_container(
-            dag=dag,
-            image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='processing_silver',
-            command=(
-                "spark-submit "
-                "--driver-memory 6g "
-                "--executor-memory 6g "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/116_update_silver.py"
             )
         )
 
         # Task: Refinamento para camada gold
-        refinement_gold = run_container(
+        refinement_gold_update = run_container(
             dag=dag,
             image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='refinement_gold',
+            container_name='refinement_gold_update',
             command=(
                 "spark-submit "
-                "--driver-memory 6g "
-                "--executor-memory 6g "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
                 "/app/117_update_gold.py"
             )
         )
 
     # Dependência entre as tarefas
-    ingestion_parquet >> ingestion_bronze >> processing_silver >> refinement_gold
+    processing_silver_update >> refinement_gold_update
 
 etl
