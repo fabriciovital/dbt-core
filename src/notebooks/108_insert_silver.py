@@ -50,6 +50,9 @@ if __name__ == "__main__":
             .config("spark.sql.shuffle.partitions", "50") \
             .getOrCreate()
 
+# Desabilitar a verificação de retenção de duração no Delta Lake
+spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Starting processing from bronze to silver...")
 

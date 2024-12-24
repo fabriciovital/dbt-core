@@ -31,6 +31,9 @@ spark = SparkSession.builder \
     .config("spark.sql.shuffle.partitions", "50") \
     .getOrCreate()
 
+# Desabilitar a verificação de retenção de duração no Delta Lake
+spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Starting conversions from Minio to Minio Delta...")
 

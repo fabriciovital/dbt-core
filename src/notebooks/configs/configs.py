@@ -356,7 +356,8 @@ WITH BASE_PERFORMANCE AS (
         t1.id_cliente,
         t1.bairro,
         t1.latitude,
-        t1.longitude
+        t1.longitude,
+        t1.last_update
     FROM
         delta.`s3a://silver/isp_performance/silver_ordem_servico` t1
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
@@ -396,7 +397,8 @@ STATUS_COUNTS AS (
         bairro,
         latitude,
         longitude,
-        COUNT(ordem_servico_id) AS qtd
+        COUNT(ordem_servico_id) AS qtd,
+        last_update
     FROM BASE_PERFORMANCE
     GROUP BY
          ano_abertura,
@@ -424,7 +426,8 @@ STATUS_COUNTS AS (
         id_cliente,
         bairro,
         latitude,
-        longitude
+        longitude,
+        last_update
 )
 SELECT
     ano_abertura,
@@ -449,6 +452,7 @@ SELECT
     bairro,
     latitude,
     longitude,
+    last_update,
     SUM(qtd) AS qtd_total,
     SUM(CASE WHEN status = 'Reagendada' THEN qtd ELSE 0 END) AS qtd_reagendada,
     SUM(CASE WHEN status = 'Encaminhada' THEN qtd ELSE 0 END) AS qtd_encaminhada,
@@ -483,6 +487,7 @@ GROUP BY
     id_cliente,
     bairro,
     latitude,
-    longitude
+    longitude,
+    last_update
 """,
 }
