@@ -16,7 +16,7 @@ def process_table(spark, query_input, output_path):
     try:
         df_input_data = spark.sql(query_input)
         df_with_update_date = F.add_metadata(df_input_data)
-        df_with_update_date = df_with_update_date.repartition(100)
+        #df_with_update_date = df_with_update_date.repartition(100)
         df_with_update_date.write \
             .format("delta") \
             .option("mergeSchema", "true") \
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             .config("spark.executor.memory", "4g") \
             .config("spark.driver.memory", "4g") \
             .config("spark.memory.fraction", "0.8") \
-            .config("spark.sql.shuffle.partitions", "50") \
+            #.config("spark.sql.shuffle.partitions", "50") \
             .getOrCreate()
     
 # Desabilitar a verificação de retenção de duração no Delta Lake

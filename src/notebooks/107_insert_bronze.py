@@ -28,7 +28,7 @@ spark = SparkSession.builder \
     .config("spark.executor.memory", "4g") \
     .config("spark.driver.memory", "4g") \
     .config("spark.memory.fraction", "0.8") \
-    .config("spark.sql.shuffle.partitions", "50") \
+    #.config("spark.sql.shuffle.partitions", "50") \
     .getOrCreate()
 
 # Desabilitar a verificação de retenção de duração no Delta Lake
@@ -51,7 +51,7 @@ def process_table(table):
         delta_table_path = f'{storage_output}{output_prefix_layer_name}{table_name}'
         
         df_input_data = spark.read.format("parquet").load(f'{table_input_name}{input_prefix_layer_name}{table_name}')        
-        df_input_data = df_input_data.repartition(100)        
+        #df_input_data = df_input_data.repartition(1)        
         df_with_update_date = F.add_metadata(df_input_data)
         
         if 'data_abertura' in df_with_update_date.columns:
