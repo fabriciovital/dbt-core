@@ -12,6 +12,9 @@ HOST_ADDRESS=os.getenv('HOST_ADDRESS')
 MINIO_ACCESS_KEY=os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY=os.getenv('MINIO_SECRET_KEY')
 
+# Lista de índices dos itens que você deseja processar (exemplo até o item 6)
+indices_para_processar = [0, 1, 2, 3, 4, 5]  # Isso corresponde às tabelas que serão processadas
+
 def process_table(spark, query_input, output_path):
     try:
         df_input_data = spark.sql(query_input)
@@ -27,7 +30,7 @@ def process_table(spark, query_input, output_path):
         
         # Limpar versões antigas imediatamente
         spark.sql(f"VACUUM delta.`{output_path}` RETAIN 0 HOURS")
-        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
+        logging.info(f"Old versions of Delta table have been removed (VACUUM).")
         
     except Exception as e:
         logging.error(f"Error processing query '{query_input}': {str(e)}")
@@ -62,7 +65,12 @@ output_prefix_layer_name = configs.prefix_layer_name['2']  # silver layer
 output_path = configs.lake_path['silver']
 
 try:
-    for table_name, query_input in configs.tables_silver.items():
+    # Itera sobre os índices definidos e processa apenas as tabelas correspondentes
+    for idx in indices_para_processar:
+        # Pegando a tabela e a query correspondentes pelo índice
+        table_name = list(configs.tables_silver.keys())[idx]
+        query_input = configs.tables_silver[table_name]
+
         table_name = F.convert_table_name(table_name)
         
         query_input = F.get_query(table_name, input_path, input_prefix_layer_name, configs.tables_silver)        

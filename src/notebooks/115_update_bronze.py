@@ -93,8 +93,12 @@ def process_table_full_load(table):
     except Exception as e:
         logging.error(f'Erro ao processar a tabela {table_name}: {str(e)}')
 
-# Processar todas as tabelas configuradas
-for key, value in configs.tables_api_isp_performance.items():
-    process_table_full_load(value)
+# Lista de índices das tabelas que você deseja processar
+table_indexes = [6]  # Exemplo, você pode alterar os índices conforme necessário
+
+# Processar as tabelas selecionadas pelos índices
+for index in table_indexes:
+    table = configs.tables_api_isp_performance.get(list(configs.tables_api_isp_performance.keys())[index])
+    process_table_full_load(table)
 
 logging.info("Processamento concluído com carga full e limpeza imediata de versões anteriores!")

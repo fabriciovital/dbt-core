@@ -74,7 +74,16 @@ def process_table(table):
         
     except Exception as e:
         logging.error(f'Error processing table {table_name}: {str(e)}')
-for key, value in configs.tables_api_isp_performance.items():
-    process_table(value)
-    
+
+# Lista de índices das tabelas que você deseja processar
+table_indexes = [0, 1, 2, 3, 4, 5]  # Exemplo, você pode alterar os índices conforme necessário
+
+# Processar apenas as tabelas com os índices especificados
+for index in table_indexes:
+    if index < len(configs.tables_api_isp_performance):
+        table_name = list(configs.tables_api_isp_performance.values())[index]
+        process_table(table_name)
+    else:
+        logging.error(f"Índice {index} fora do alcance das tabelas.")
+
 logging.info("Conversion from parquet to Delta completed successfully!")

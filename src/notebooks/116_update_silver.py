@@ -97,11 +97,18 @@ if __name__ == "__main__":
     output_path = configs.lake_path['silver']
 
     try:
-        for table_name, query_input in configs.tables_silver.items():
+        # Lista de índices manual dos itens a serem processados (até o item 6)
+        indices_to_process = [6]  # Exemplo: processar os primeiros 6 itens
+
+        # Iterar apenas pelos índices desejados
+        for i in indices_to_process:
+            # Obter a tabela de acordo com o índice
+            table_name, query_input = list(configs.tables_silver.items())[i]
             table_name = F.convert_table_name(table_name)
             query_input = F.get_query(table_name, input_path, input_prefix_layer_name, configs.tables_silver)        
             storage_output = f'{output_path}{output_prefix_layer_name}{table_name}'
-            
+
+            # Processar a tabela
             process_table(spark, query_input, storage_output, table_name)
         
         logging.info("Process to silver completed!")

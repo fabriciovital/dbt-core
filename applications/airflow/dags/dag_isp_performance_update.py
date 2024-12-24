@@ -40,6 +40,34 @@ with DAG(
     # Agrupamento das tarefas no TaskGroup
     with TaskGroup(group_id="isp_performance_update") as etl:
 
+        # Task: Ingestão de dados para parquet
+        ingestion_parquet_update = run_container(
+            dag=dag,
+            image='fabriciovital/data_engineering_stack:isp-performance',
+            container_name='ingestion_parquet_update',
+            command=(
+                "spark-submit "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
+                "--conf spark.io.compression.codec=lz4 "
+                "/app/114_update_landing.py"
+            )
+        )
+
+        # Task: Ingestão de dados para bronze
+        ingestion_bronze_update = run_container(
+            dag=dag,
+            image='fabriciovital/data_engineering_stack:isp-performance',
+            container_name='ingestion_bronze_update',
+            command=(
+                "spark-submit "
+                "--driver-memory 4g "
+                "--executor-memory 4g "
+                "--conf spark.io.compression.codec=lz4 "
+                "/app/115_update_bronze.py"
+            )
+        )
+
         # Task: Processamento para camada silver
         processing_silver_update = run_container(
             dag=dag,
@@ -54,21 +82,7 @@ with DAG(
             )
         )
 
-        # Task: Refinamento para camada gold
-        refinement_gold_update = run_container(
-            dag=dag,
-            image='fabriciovital/data_engineering_stack:isp-performance',
-            container_name='refinement_gold_update',
-            command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/117_update_gold.py"
-            )
-        )
-
     # Dependência entre as tarefas
-    processing_silver_update >> refinement_gold_update
+    ingestion_parquet_update >> ingestion_bronze_update >> processing_silver_update
 
 etl

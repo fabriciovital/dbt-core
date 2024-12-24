@@ -87,8 +87,8 @@ SELECT
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_usuarios`
     """,
-        # Ordem Serviço
-    "ordem_servico": f"""
+        # Ordem Serviço Aberto
+    "ordem_servico_aberto": f"""
 SELECT
     mensagem_resposta,
     data_hora_analise,
@@ -204,7 +204,9 @@ SELECT
     DATE_FORMAT(data_abertura, 'yyyyMM') AS month_key
 FROM
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}ordem_servico_aberto`
-UNION
+""",
+        # Ordem Serviço Fechado
+    "ordem_servico_fechado": f"""
 SELECT 
     mensagem_resposta,
     data_hora_analise,
@@ -359,15 +361,47 @@ WITH BASE_PERFORMANCE AS (
         t1.longitude,
         t1.last_update
     FROM
-        delta.`s3a://silver/isp_performance/silver_ordem_servico` t1
+        delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t4 ON (t4.id = t1.id_setor)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
-    ORDER BY
+    UNION
+    SELECT
+        t1.ano_abertura,
         t1.ano_mes_abertura,
-        t2.id
+        t1.data_abertura,
+        t1.ano_fechamento,
+        t1.ano_mes_fechamento,
+        t1.data_fechamento,
+        t2.id AS id_filial,
+        t2.fantasia AS filial,
+        t4.id AS id_setor,
+        t4.setor AS setor,
+        t6.id AS id_relator,
+        t6.login AS relator,
+        t5.id AS id_tecnico,
+        t5.funcionario AS tecnico,
+        t3.id AS id_assunto,
+        t3.assunto AS assunto,
+        t1.id AS ordem_servico_id,
+        t1.id_status,
+        t1.status,
+        t1.id_status_sla,
+        t1.status_sla,
+        t1.id_cliente,
+        t1.bairro,
+        t1.latitude,
+        t1.longitude,
+        t1.last_update
+    FROM
+        delta.`s3a://silver/isp_performance/silver_ordem_servico_fechado` t1
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t4 ON (t4.id = t1.id_setor)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
 ),
 STATUS_COUNTS AS (
     SELECT
