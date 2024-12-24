@@ -28,7 +28,7 @@ spark = SparkSession.builder \
     .config("spark.executor.memory", "4g") \
     .config("spark.driver.memory", "4g") \
     .config("spark.memory.fraction", "0.8") \
-    #.config("spark.sql.shuffle.partitions", "50") \
+    .config("spark.sql.shuffle.partitions", "50") \
     .getOrCreate()
 
 # Desabilitar a verificação de retenção de duração no Delta Lake
