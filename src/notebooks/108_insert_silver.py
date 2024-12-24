@@ -22,7 +22,13 @@ def process_table(spark, query_input, output_path):
             .option("mergeSchema", "true") \
             .mode("overwrite") \
             .save(output_path)
+        
         logging.info(f"query '{query_input}' successfully processed and saved to {output_path}")
+        
+        # Limpar versões antigas imediatamente
+        spark.sql(f"VACUUM delta.`{output_path}` RETAIN 0 HOURS")
+        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
+        
     except Exception as e:
         logging.error(f"Error processing query '{query_input}': {str(e)}")
 

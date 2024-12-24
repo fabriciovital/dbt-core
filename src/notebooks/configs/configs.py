@@ -352,7 +352,11 @@ WITH BASE_PERFORMANCE AS (
         t1.id_status,
         t1.status,
         t1.id_status_sla,
-        t1.status_sla
+        t1.status_sla,
+        t1.id_cliente,
+        t1.bairro,
+        t1.latitude,
+        t1.longitude
     FROM
         delta.`s3a://silver/isp_performance/silver_ordem_servico` t1
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
@@ -368,8 +372,10 @@ STATUS_COUNTS AS (
     SELECT
         ano_abertura,
         ano_mes_abertura,
+        data_abertura,
         ano_fechamento,
         ano_mes_fechamento,
+        data_fechamento,
         id_filial,
         filial,
         id_setor,
@@ -386,13 +392,19 @@ STATUS_COUNTS AS (
         data_fechamento,
         id_status_sla,
         status_sla,
+        id_cliente,
+        bairro,
+        latitude,
+        longitude,
         COUNT(ordem_servico_id) AS qtd
     FROM BASE_PERFORMANCE
     GROUP BY
-        ano_abertura,
+         ano_abertura,
         ano_mes_abertura,
+        data_abertura,
         ano_fechamento,
         ano_mes_fechamento,
+        data_fechamento,
         id_filial,
         filial,
         id_setor,
@@ -400,21 +412,27 @@ STATUS_COUNTS AS (
         id_assunto,
         assunto,
         id_relator,
-	    relator,
-	    id_tecnico,
-	    tecnico,
+        relator,
+        id_tecnico,
+        tecnico,
         id_status,
         status,
         data_abertura,
         data_fechamento,
         id_status_sla,
-        status_sla
+        status_sla,
+        id_cliente,
+        bairro,
+        latitude,
+        longitude
 )
 SELECT
     ano_abertura,
     ano_mes_abertura,
+    data_abertura,
     ano_fechamento,
     ano_mes_fechamento,
+    data_fechamento,
     id_filial,
     filial,
     id_setor,
@@ -425,6 +443,12 @@ SELECT
     relator,
     id_tecnico,
     tecnico,
+    id_status_sla,
+    status_sla,
+    id_cliente,
+    bairro,
+    latitude,
+    longitude,
     SUM(qtd) AS qtd_total,
     SUM(CASE WHEN status = 'Reagendada' THEN qtd ELSE 0 END) AS qtd_reagendada,
     SUM(CASE WHEN status = 'Encaminhada' THEN qtd ELSE 0 END) AS qtd_encaminhada,
@@ -433,16 +457,17 @@ SELECT
     SUM(CASE WHEN status = 'Agendada' THEN qtd ELSE 0 END) AS qtd_agendada,
     SUM(CASE WHEN status = 'Aberta' THEN qtd ELSE 0 END) AS qtd_aberta,
     SUM(CASE WHEN status = 'Em Execução' THEN qtd ELSE 0 END) AS qtd_execucao,
+    SUM(CASE WHEN status IN ('Reagendada', 'Encaminhada', 'Assumida', 'Deslocamento', 'Agendada', 'Aberta', 'Em Execução') THEN qtd ELSE 0 END) AS qtd_pendente,
     SUM(CASE WHEN status = 'Fechada' THEN qtd ELSE 0 END) AS qtd_fechada,
-    AVG(CAST(unix_timestamp(data_fechamento) - unix_timestamp(data_abertura) AS DECIMAL)) AS tempo_medio_fechamento_segundos,
-    SUM(CASE WHEN status_sla = 'Dentro do Prazo' THEN qtd ELSE 0 END) AS qtd_dentro_prazo,
-    SUM(CASE WHEN status_sla = 'Fora do Prazo' THEN qtd ELSE 0 END) AS qtd_fora_prazo
+    AVG(CAST(unix_timestamp(data_fechamento) - unix_timestamp(data_abertura) AS DECIMAL)) AS tempo_medio_fechamento_segundos
 FROM STATUS_COUNTS
 GROUP BY 
     ano_abertura,
     ano_mes_abertura,
+    data_abertura,
     ano_fechamento,
     ano_mes_fechamento,
+    data_fechamento,
     id_filial,
     filial,
     id_setor,
@@ -452,6 +477,12 @@ GROUP BY
     id_relator,
     relator,
     id_tecnico,
-    tecnico
+    tecnico,
+    id_status_sla,
+    status_sla,
+    id_cliente,
+    bairro,
+    latitude,
+    longitude
 """,
 }

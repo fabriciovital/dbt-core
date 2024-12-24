@@ -43,6 +43,10 @@ def process_table(table):
     table_name = F.convert_table_name(table)
     
     try:
+        
+        # Caminho da tabela destino (Bronze)
+        delta_table_path = f'{storage_output}{output_prefix_layer_name}{table_name}'
+        
         df_input_data = spark.read.format("parquet").load(f'{table_input_name}{input_prefix_layer_name}{table_name}')        
         df_input_data = df_input_data.repartition(100)        
         df_with_update_date = F.add_metadata(df_input_data)
@@ -58,8 +62,13 @@ def process_table(table):
                 concat(year(current_date()), lpad(month(current_date()), 2, '0'))
             )
             
-        df_with_month_key.write.format("delta").mode("overwrite").option("mergeSchema", "true").partitionBy('month_key').save(f'{storage_output}{output_prefix_layer_name}{table_name}')
+        df_with_month_key.write.format("delta").mode("overwrite").option("mergeSchema", "true").partitionBy('month_key').save(delta_table_path)
         logging.info(f'Table {table_name} successfully processed and saved to Minio: {storage_output}{output_prefix_layer_name}{table_name}')
+        
+        # Limpar versões antigas imediatamente
+        spark.sql(f"VACUUM delta.`{delta_table_path}` RETAIN 0 HOURS")
+        logging.info(f"Old versions of Delta table '{table_name}' have been removed (VACUUM).")
+        
     except Exception as e:
         logging.error(f'Error processing table {table_name}: {str(e)}')
 for key, value in configs.tables_api_isp_performance.items():

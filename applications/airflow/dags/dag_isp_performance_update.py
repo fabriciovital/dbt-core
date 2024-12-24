@@ -27,7 +27,7 @@ def run_container(dag, image, container_name, command):
 
 # Definição da DAG
 with DAG(
-    'isp_performance',
+    'isp_performance_update',
     default_args=default_args,
     start_date=datetime(2024, 11, 4),
     schedule_interval='*/5 * * * *',

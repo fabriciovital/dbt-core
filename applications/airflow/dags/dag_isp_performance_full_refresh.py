@@ -27,7 +27,7 @@ def run_container(dag, image, container_name, command):
 
 # Definição da DAG
 with DAG(
-    'isp_performance_produtividade',
+    'isp_performance_full_refresh',
     default_args=default_args,
     start_date=datetime(2024, 11, 4),
     schedule_interval='*/10 * * * *',
@@ -50,7 +50,7 @@ with DAG(
                 "--driver-memory 4g "
                 "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
-                "/app/114_update_landing_produtividade.py"
+                "/app/106_insert_landing.py"
             )
         )
 
@@ -64,7 +64,7 @@ with DAG(
                 "--driver-memory 4g "
                 "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
-                "/app/115_update_bronze_produtividade.py"
+                "/app/107_insert_bronze.py"
             )
         )
 
@@ -78,7 +78,7 @@ with DAG(
                 "--driver-memory 4g "
                 "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
-                "/app/116_update_silver_produtividade.py"
+                "/app/108_insert_silver.py"
             )
         )
 
@@ -92,7 +92,7 @@ with DAG(
                 "--driver-memory 4g "
                 "--executor-memory 4g "
                 "--conf spark.io.compression.codec=lz4 "
-                "/app/117_update_gold_produtividade.py"
+                "/app/109_insert_gold.py"
             )
         )
 
