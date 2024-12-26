@@ -48,6 +48,10 @@ if __name__ == "__main__":
             .config("spark.memory.fraction", "0.8") \
             .config("spark.sql.shuffle.partitions", "50") \
             .getOrCreate()
+
+# Configurações específicas do Delta Lake
+spark.conf.set("spark.delta.logRetentionDuration", "interval 1 day")  # Manter logs por 1 dia
+spark.conf.set("spark.delta.deletedFileRetentionDuration", "interval 1 day")  # Manter arquivos deletados por 1 dia
     
 # Desabilitar a verificação de retenção de duração no Delta Lake
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")    
