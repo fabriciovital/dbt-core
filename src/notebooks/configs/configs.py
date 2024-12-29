@@ -11,13 +11,14 @@ prefix_layer_name = {"0": "landing_", "1": "bronze_", "2": "silver_", "3": "gold
 # Start Landing Parquet from API Situacionais
 # ************************
 tables_landing = {
-    "1": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/filial",
-    "2": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/colaboradores",
-    "3": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/assunto",
-    "4": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/setor",
-    "5": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/usuarios",
-    "6": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/aberto",
-    "7": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/fechado",
+#    "1": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/filial",
+#    "2": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/colaboradores",
+#    "3": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/assunto",
+#    "4": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/setor",
+#    "5": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/usuarios",
+#    "6": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/aberto",
+#    "7": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/fechado",
+    "8": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/cliente",
 }
 
 # ************************
@@ -31,6 +32,7 @@ tables_api_isp_performance = {
     "5": "dim_usuarios",
     "6": "ordem_servico_aberto",
     "7": "ordem_servico_fechado",
+    "8": "dim_cliente",
 }
 
 # ************************
@@ -87,6 +89,16 @@ SELECT
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_usuarios`
     """,
+        # Dimensao Usuarios
+    "dim_cliente": f"""
+SELECT 
+    id,
+    upper(razao) nome_cliente,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cliente`
+    """,
         # Ordem Serviço Aberto
     "ordem_servico_aberto": f"""
 SELECT
@@ -127,14 +139,14 @@ SELECT
     liberado,
     status id_status,
     CASE 
-        WHEN status = 'RAG' THEN 'Reagendada'
+        WHEN status = 'RAG' THEN 'Reagendar'
         WHEN status = 'EN' THEN 'Encaminhada'
         WHEN status = 'AS' THEN 'Assumida'
         WHEN status = 'DS' THEN 'Deslocamento'
         WHEN status = 'AG' THEN 'Agendada'
         WHEN status = 'A' THEN 'Aberta'
         WHEN status = 'EX' THEN 'Em Execução'
-        ELSE 'Fechada'
+        ELSE 'Finalizada'
     END AS status,
     id_cliente,
     id_assunto,
@@ -245,14 +257,14 @@ SELECT
     liberado,
     status id_status,
     CASE 
-        WHEN status = 'RAG' THEN 'Reagendada'
+        WHEN status = 'RAG' THEN 'Reagendar'
         WHEN status = 'EN' THEN 'Encaminhada'
         WHEN status = 'AS' THEN 'Assumida'
         WHEN status = 'DS' THEN 'Deslocamento'
         WHEN status = 'AG' THEN 'Agendada'
         WHEN status = 'A' THEN 'Aberta'
         WHEN status = 'EX' THEN 'Em Execução'
-        ELSE 'Fechada'
+        ELSE 'Finalizada'
     END AS status,
     id_cliente,
     id_assunto,
@@ -340,6 +352,9 @@ WITH BASE_PERFORMANCE AS (
         t1.ano_fechamento,
         t1.ano_mes_fechamento,
         t1.data_fechamento,
+        t1.data_agenda,
+        t1.data_hora_assumido,	
+        t1.data_hora_execucao,	
         t2.id AS id_filial,
         t2.fantasia AS filial,
         t4.id AS id_setor,
@@ -356,6 +371,7 @@ WITH BASE_PERFORMANCE AS (
         t1.id_status_sla,
         t1.status_sla,
         t1.id_cliente,
+        t7.nome_cliente,
         t1.bairro,
         t1.latitude,
         t1.longitude,
@@ -367,6 +383,7 @@ WITH BASE_PERFORMANCE AS (
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t4 ON (t4.id = t1.id_setor)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t7 ON (t7.id = t1.id_cliente)
     UNION
     SELECT
         t1.ano_abertura,
@@ -375,6 +392,9 @@ WITH BASE_PERFORMANCE AS (
         t1.ano_fechamento,
         t1.ano_mes_fechamento,
         t1.data_fechamento,
+        t1.data_agenda,
+        t1.data_hora_assumido,	
+        t1.data_hora_execucao,	
         t2.id AS id_filial,
         t2.fantasia AS filial,
         t4.id AS id_setor,
@@ -391,6 +411,7 @@ WITH BASE_PERFORMANCE AS (
         t1.id_status_sla,
         t1.status_sla,
         t1.id_cliente,
+        t7.nome_cliente,
         t1.bairro,
         t1.latitude,
         t1.longitude,
@@ -402,6 +423,7 @@ WITH BASE_PERFORMANCE AS (
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t4 ON (t4.id = t1.id_setor)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t7 ON (t7.id = t1.id_cliente)
 ),
 STATUS_COUNTS AS (
     SELECT
@@ -411,6 +433,9 @@ STATUS_COUNTS AS (
         ano_fechamento,
         ano_mes_fechamento,
         data_fechamento,
+        data_agenda,
+        data_hora_assumido,	
+        data_hora_execucao,	
         id_filial,
         filial,
         id_setor,
@@ -428,6 +453,7 @@ STATUS_COUNTS AS (
         id_status_sla,
         status_sla,
         id_cliente,
+        nome_cliente,
         bairro,
         latitude,
         longitude,
@@ -435,12 +461,15 @@ STATUS_COUNTS AS (
         last_update
     FROM BASE_PERFORMANCE
     GROUP BY
-         ano_abertura,
+        ano_abertura,
         ano_mes_abertura,
         data_abertura,
         ano_fechamento,
         ano_mes_fechamento,
         data_fechamento,
+        data_agenda,
+        data_hora_assumido,	
+        data_hora_execucao,	
         id_filial,
         filial,
         id_setor,
@@ -458,6 +487,7 @@ STATUS_COUNTS AS (
         id_status_sla,
         status_sla,
         id_cliente,
+        nome_cliente,
         bairro,
         latitude,
         longitude,
@@ -470,6 +500,9 @@ SELECT
     ano_fechamento,
     ano_mes_fechamento,
     data_fechamento,
+    data_agenda,
+    data_hora_assumido,	
+    data_hora_execucao,	
     id_filial,
     filial,
     id_setor,
@@ -483,20 +516,21 @@ SELECT
     id_status_sla,
     status_sla,
     id_cliente,
+    nome_cliente,
     bairro,
     latitude,
     longitude,
     last_update,
     SUM(qtd) AS qtd_total,
-    SUM(CASE WHEN status = 'Reagendada' THEN qtd ELSE 0 END) AS qtd_reagendada,
+    SUM(CASE WHEN status = 'Reagendar' THEN qtd ELSE 0 END) AS qtd_reagendar,
     SUM(CASE WHEN status = 'Encaminhada' THEN qtd ELSE 0 END) AS qtd_encaminhada,
     SUM(CASE WHEN status = 'Assumida' THEN qtd ELSE 0 END) AS qtd_assumida,
     SUM(CASE WHEN status = 'Deslocamento' THEN qtd ELSE 0 END) AS qtd_deslocamento,
     SUM(CASE WHEN status = 'Agendada' THEN qtd ELSE 0 END) AS qtd_agendada,
     SUM(CASE WHEN status = 'Aberta' THEN qtd ELSE 0 END) AS qtd_aberta,
     SUM(CASE WHEN status = 'Em Execução' THEN qtd ELSE 0 END) AS qtd_execucao,
-    SUM(CASE WHEN status IN ('Reagendada', 'Encaminhada', 'Assumida', 'Deslocamento', 'Agendada', 'Aberta', 'Em Execução') THEN qtd ELSE 0 END) AS qtd_pendente,
-    SUM(CASE WHEN status = 'Fechada' THEN qtd ELSE 0 END) AS qtd_fechada,
+    SUM(CASE WHEN status IN ('Reagendar', 'Encaminhada', 'Aberta') THEN qtd ELSE 0 END) AS qtd_pendente,
+    SUM(CASE WHEN status = 'Finalizada' THEN qtd ELSE 0 END) AS qtd_Finalizada,
     AVG(CAST(unix_timestamp(data_fechamento) - unix_timestamp(data_abertura) AS DECIMAL)) AS tempo_medio_fechamento_segundos
 FROM STATUS_COUNTS
 GROUP BY 
@@ -506,6 +540,9 @@ GROUP BY
     ano_fechamento,
     ano_mes_fechamento,
     data_fechamento,
+    data_agenda,
+    data_hora_assumido,	
+    data_hora_execucao,	
     id_filial,
     filial,
     id_setor,
@@ -519,6 +556,7 @@ GROUP BY
     id_status_sla,
     status_sla,
     id_cliente,
+    nome_cliente,
     bairro,
     latitude,
     longitude,

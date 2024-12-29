@@ -120,18 +120,23 @@ CORS_OPTIONS = {
     'supports_credentials': True,
     'allow_headers': ['*'],
     'resources': ['*'],
-    'origins': ['*']
+    'origins': ['http://170.79.87.9:8088', 'http://170.79.87.9:8888', 'http://170.79.87.9:3001', 'http://170.79.87.9:8889']
 }
 
 # Configurações de Feature Flags
-FEATURE_FLAGS = {
-    "ALERT_REPORTS": True,
-    "EMBEDDED_SUPERSET": True  # Requirement
-}
 
-# Configurações de Guest Role e Token
-GUEST_ROLE_NAME = "Admin"  # Ajustar permissões de função se ocorrer erro 403
-GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutos, ou ajuste para um tempo maior
+FEATURE_FLAGS = {"ENABLE_TEMPLATE_PROCESSING": True, 'DASHBOARD_CROSS_FILTERS' : False, "EMBEDDABLE_CHARTS": True, "EMBEDDED_SUPERSET": True}
+
+# SESSION_COOKIE_SAMESITE = None
+# PUBLIC_ROLE_LIKE_GAMMA = True
+# ENABLE_PROXY_FIX = True
+OVERRIDE_HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
+TALISMAN_ENABLED = False
+# ENABLE_GUEST_ACCESS = True
+GUEST_ROLE_NAME = "Public"  # Ajustar permissões de função se ocorrer erro 403
+GUEST_TOKEN_JWT_EXP_SECONDS = 3600  # 5 minutos, ou ajuste para um tempo maior
+# SESSION_COOKIE_SECURE = False
+JWT_VERIFY_SUB = False
 
 # Visual Customizations
 APP_NAME = "Nexus Analytics"
@@ -141,6 +146,9 @@ APP_ICON_WIDTH = 200
 LOGO_TARGET_PATH = '/' # Forwards to /superset/welcome/home
 LOGO_TOOLTIP = "Go Home" # Text displayed when hovering.
 FAVICONS = [{"href": "/static/assets/images/nexus_logo.png"}]
+WTF_CSRF_ENABLED = False
+WTF_CSRF_EXEMPT_LIST = []
+WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365
 
 #
 # Optionally import superset_config_docker.py (which will have been included on
