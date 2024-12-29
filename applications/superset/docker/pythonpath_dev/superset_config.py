@@ -120,7 +120,8 @@ CORS_OPTIONS = {
     'supports_credentials': True,
     'allow_headers': ['*'],
     'resources': ['*'],
-    'origins': ['http://170.79.87.9:8088', 'http://170.79.87.9:8888', 'http://170.79.87.9:3001', 'http://170.79.87.9:8889']
+    # 'origins': ['http://170.79.87.9:8088', 'http://170.79.87.9:8888', 'http://170.79.87.9:3001', 'http://170.79.87.9:8889']
+    'origins': ['*']
 }
 
 # Configurações de Feature Flags
