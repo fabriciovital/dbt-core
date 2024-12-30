@@ -46,11 +46,12 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_parquet_update',
             command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/114_update_landing.py"
+                # "spark-submit "
+                # "--driver-memory 4g "
+                # "--executor-memory 4g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/114_update_landing.py"
+                 "python /app/114_update_landing.py"
             )
         )
 
@@ -60,11 +61,13 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_bronze_update',
             command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/115_update_bronze.py"
+                # "spark-submit "
+                # "--driver-memory 4g "
+                # "--executor-memory 4g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/115_update_bronze.py"
+                 "python /app/115_update_bronze.py"
+                
             )
         )
 
@@ -74,11 +77,12 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='processing_silver_update',
             command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/116_update_silver.py"
+                # "spark-submit "
+                # "--driver-memory 4g "
+                # "--executor-memory 4g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/116_update_silver.py"
+                 "python /app/116_update_silver.py"
             )
         )
 

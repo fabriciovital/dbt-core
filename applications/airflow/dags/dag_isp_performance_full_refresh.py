@@ -46,11 +46,12 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_parquet_full_refresh',
             command=(
-                "spark-submit "
-                "--driver-memory 2g "
-                "--executor-memory 2g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/106_insert_landing.py"
+                # "spark-submit "
+                # "--driver-memory 2g "
+                # "--executor-memory 2g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/106_insert_landing.py"
+                "python /app/106_insert_landing.py"
             )
         )
 
@@ -60,11 +61,12 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='ingestion_bronze_full_refresh',
             command=(
-                "spark-submit "
-                "--driver-memory 6g "
-                "--executor-memory 6g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/107_insert_bronze.py"
+                # "spark-submit "
+                # "--driver-memory 6g "
+                # "--executor-memory 6g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/107_insert_bronze.py"
+                "python /app/107_insert_bronze.py"
             )
         )
 
@@ -74,11 +76,12 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='processing_silver_full_refresh',
             command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/108_insert_silver.py"
+                # "spark-submit "
+                # "--driver-memory 4g "
+                # "--executor-memory 4g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/108_insert_silver.py"
+                "python /app/108_insert_silver.py"
             )
         )
 
@@ -88,11 +91,12 @@ with DAG(
             image='fabriciovital/data_engineering_stack:isp-performance',
             container_name='refinement_gold_full_refresh',
             command=(
-                "spark-submit "
-                "--driver-memory 4g "
-                "--executor-memory 4g "
-                "--conf spark.io.compression.codec=lz4 "
-                "/app/109_insert_gold.py"
+                # "spark-submit "
+                # "--driver-memory 4g "
+                # "--executor-memory 4g "
+                # "--conf spark.io.compression.codec=lz4 "
+                # "/app/109_insert_gold.py"
+                "python /app/109_insert_gold.py"
             )
         )
 
