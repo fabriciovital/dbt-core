@@ -13,7 +13,7 @@ MINIO_ACCESS_KEY=os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY=os.getenv('MINIO_SECRET_KEY')
 
 # Lista de índices dos itens que você deseja processar (exemplo até o item 6)
-indices_para_processar = [0, 1, 2, 3, 4, 5]  # Isso corresponde às tabelas que serão processadas
+indices_para_processar = [0, 1, 2, 3, 4, 5, 7]  # Isso corresponde às tabelas que serão processadas
 
 def process_table(spark, query_input, output_path):
     try:

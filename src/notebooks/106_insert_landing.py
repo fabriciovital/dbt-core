@@ -26,6 +26,6 @@ def fetch_selected_apis(table_indexes):
     return responses
 
 # Exemplo de uso
-table_indexes = [0, 1, 2, 3, 4, 5]  # Passar os índices das tabelas que você deseja processar
+table_indexes = [0, 1, 2, 3, 4, 5, 7]  # Passar os índices das tabelas que você deseja processar
 api_responses = fetch_selected_apis(table_indexes)
 print("Respostas das APIs:", api_responses)
