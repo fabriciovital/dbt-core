@@ -597,7 +597,6 @@ GROUP BY
 """,
         # Ordem Serviço Aberto
     "ordem_servico_aberto": """
-WITH BASE_PERFORMANCE AS (
     SELECT
         t1.ano_abertura,
         t1.ano_mes_abertura,
