@@ -19,6 +19,7 @@ tables_landing = {
     "6": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/aberto",
     "7": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/fechado",
     "8": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/cliente",
+    "9": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/cidade",
 }
 
 # ************************
@@ -33,6 +34,7 @@ tables_api_isp_performance = {
     "6": "ordem_servico_aberto",
     "7": "ordem_servico_fechado",
     "8": "dim_cliente",
+    "9": "dim_cidade",
 }
 
 # ************************
@@ -89,7 +91,7 @@ SELECT
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_usuarios`
     """,
-        # Dimensao Usuarios
+        # Dimensao Cliente
     "dim_cliente": f"""
 SELECT 
     id,
@@ -98,6 +100,16 @@ SELECT
     month_key
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cliente`
+    """,
+        # Dimensao Cidade
+    "dim_cidade": f"""
+SELECT 
+    id,
+    nome as cidade,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cidade`
     """,
         # Ordem Serviço Aberto
     "ordem_servico_aberto": f"""
@@ -342,7 +354,7 @@ FROM
 # Start Gold Tables
 # ************************
 tables_gold = {
-    # Ordem Serviço Aberto
+        # Ordem Serviço Aberto
     "performance_ordem_servico": """
 WITH BASE_PERFORMANCE AS (
     SELECT
@@ -376,6 +388,8 @@ WITH BASE_PERFORMANCE AS (
         t1.bairro,
         t1.latitude,
         t1.longitude,
+        t1.id_cidade,
+        t8.cidade,
         t1.last_update
     FROM
         delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
@@ -385,6 +399,7 @@ WITH BASE_PERFORMANCE AS (
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t7 ON (t7.id = t1.id_cliente)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cidade` t8 ON (t8.id = t1.id_cidade)
     UNION
     SELECT
         t1.ano_abertura,
@@ -417,6 +432,8 @@ WITH BASE_PERFORMANCE AS (
         t1.bairro,
         t1.latitude,
         t1.longitude,
+        t1.id_cidade,
+        t8.cidade,
         t1.last_update
     FROM
         delta.`s3a://silver/isp_performance/silver_ordem_servico_fechado` t1
@@ -426,6 +443,7 @@ WITH BASE_PERFORMANCE AS (
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t7 ON (t7.id = t1.id_cliente)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cidade` t8 ON (t8.id = t1.id_cidade)
 ),
 STATUS_COUNTS AS (
     SELECT
@@ -460,6 +478,8 @@ STATUS_COUNTS AS (
         bairro,
         latitude,
         longitude,
+        id_cidade,
+        cidade,
         COUNT(ordem_servico_id) AS qtd,
         last_update
     FROM BASE_PERFORMANCE
@@ -495,6 +515,8 @@ STATUS_COUNTS AS (
         bairro,
         latitude,
         longitude,
+        id_cidade,
+        cidade,
         last_update
 )
 SELECT
@@ -525,6 +547,8 @@ SELECT
     bairro,
     latitude,
     longitude,
+    id_cidade,
+    cidade,
     last_update,
     SUM(qtd) AS qtd_total,
     SUM(CASE WHEN status = 'Reagendar' THEN qtd ELSE 0 END) AS qtd_reagendar,
@@ -567,6 +591,53 @@ GROUP BY
     bairro,
     latitude,
     longitude,
+    id_cidade,
+    cidade,
     last_update
+""",
+        # Ordem Serviço Aberto
+    "ordem_servico_aberto": """
+WITH BASE_PERFORMANCE AS (
+    SELECT
+        t1.ano_abertura,
+        t1.ano_mes_abertura,
+        t1.data_abertura,
+        t1.data_agenda,
+        t1.data_hora_assumido,	
+        t1.data_hora_execucao,	
+        t1.id_filial,
+        t2.fantasia AS filial,
+        t1.id_setor,
+        t4.setor AS setor,
+        t6.id AS id_relator,
+        t6.login AS relator,
+        t1.id_tecnico,
+        t5.funcionario AS tecnico,
+        t1.id_assunto,
+        t3.assunto AS assunto,
+        t1.id_ticket AS id_atendimento,
+        t1.id AS id_ordem_servico,
+        t1.id_status,
+        t1.status,
+        t1.prioridade,
+        t1.id_status_sla,
+        t1.status_sla,
+        t1.id_cliente,
+        t7.nome_cliente,
+        t1.bairro,
+        t1.latitude,
+        t1.longitude,
+        t1.id_cidade,
+        t8.cidade,
+        t1.last_update
+    FROM
+        delta.`s3a://silver/isp_performance/silver_ordem_servico_aberto` t1
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_assunto` t3 ON (t3.id = t1.id_assunto)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_setor` t4 ON (t4.id = t1.id_setor)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_tecnico)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t7 ON (t7.id = t1.id_cliente)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cidade` t8 ON (t8.id = t1.id_cidade)
 """,
 }

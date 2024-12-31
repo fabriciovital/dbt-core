@@ -30,7 +30,7 @@ with DAG(
     'isp_performance_update',
     default_args=default_args,
     start_date=datetime(2024, 11, 4),
-    schedule_interval='*/15 * * * *',
+    schedule_interval='*/10 * * * *',
     catchup=False,
     max_active_runs=1,
     concurrency=1,
