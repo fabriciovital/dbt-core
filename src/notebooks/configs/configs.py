@@ -55,7 +55,7 @@ FROM
     "dim_colaboradores": f"""
 SELECT 
      id,
-     funcionario,
+     upper(funcionario) funcionario,
      last_update,
      month_key
 FROM 

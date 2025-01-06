@@ -1,0 +1,133 @@
+/* Father Container from each container on the dashboard */
+.dashboard-component {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    /*border: 10px solid red; descomente apenas para ver */
+  }
+  
+  /* 1st container (Top Left) inside the dashboard-component */
+  /*.dashboard-markdown{*/
+  /*  display: none;*/
+  /*}*/
+  
+  /* Define o fundo das tabs como transparente */
+  .ant-tabs-content-holder {
+    background: transparent;
+  }
+  
+  /* Icons */
+  .ant-tabs-content-holder * {
+    color: black;
+  }
+  
+  /* Deixa o texto das tabs ativas em negrito */
+  .ant-tabs-tab-active * {
+    font-weight: bold;
+    color: #0000FF !important;
+  }
+  
+  /* Fundo azul claro no dashboard */
+  .dashboard-content {
+    background-image: linear-gradient(5deg, #FFFFFF, #4169E1);
+    font-family: 'Inter', sans-serif;
+    padding: 5px;
+    border-radius: 1px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Remove sombra das tabs */
+  .dashboard-component-tabs {
+    background: #f7f7f7;
+    box-shadow: none;
+  }
+  
+  /* Fundo dos gráficos ajustado para contraste */
+  .superset-chart-container .chart-container {
+    background-color: #ffffff;
+    border: 2px solid #90caf9 !important;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Altera a cor das colunas dos gráficos para azul */
+  .superset-chart-container .ant-chart-column {
+    fill: #42a5f5 !important;
+  }
+  
+  /* Altera a cor do texto (eixos, títulos, legendas) para preto */
+  .superset-chart-container .ant-chart-axis-label,
+  .superset-chart-container .ant-chart-legend-item {
+    fill: #212121 !important;
+    font-weight: 500;
+  }
+  
+  /* Linhas de grade com contraste suave */
+  .superset-chart-container .ant-chart-grid-line {
+    stroke: #e0e0e0 !important;
+  }
+  
+  /* Barra de título das colunas transparente com texto preto */
+  .superset-chart-container .ant-chart-axis-title {
+    background: transparent !important;
+    color: #212121 !important;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  /* Barra de título das colunas (eixos) sem bordas */
+  .superset-chart-container .ant-chart-axis {
+    border: none !important;
+  }
+  
+  /* Rótulos dos dados no gráfico ajustados para preto */
+  .superset-chart-container .ant-chart-label {
+    fill: #424242 !important;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  
+  /* Tooltip dos gráficos com fundo escuro e texto claro */
+  .superset-chart-container .ant-chart-tooltip {
+    background-color: rgba(50, 50, 50, 0.9) !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Tabelas com fundo branco para legibilidade */
+  table {
+    color: black;
+    background-color: #ffffff !important;
+    border-spacing: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Títulos das tabelas com fundo mais escuro e bordas */
+  table th {
+    background-color: #90caf9 !important; /* Azul realçado */
+    font-weight: bold !important;
+    padding: 12px; /* Espaçamento interno */
+    text-align: center;
+    font-size: 14px; /* Texto maior e legível */
+  }
+  
+  /* Células das tabelas ajustadas */
+  table td {
+    border: 2px solid #e0e0e0 !important;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  /* Ajuste adicional nas bordas */
+  table th:first-child {
+    border-top-left-radius: 10px;
+  }
+  
+  table th:last-child {
+    border-top-right-radius: 10px;
+  }  

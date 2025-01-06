@@ -40,6 +40,8 @@ services:
     image: redis:7
     container_name: superset_cache
     restart: unless-stopped
+    environment:
+      - TZ=America/Manaus
     volumes:
       - redis:/data
 
@@ -49,6 +51,8 @@ services:
     image: postgres:15
     container_name: superset_db
     restart: unless-stopped
+    environment:
+      - TZ=America/Manaus
     volumes:
       - db_home:/var/lib/postgresql/data
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
@@ -56,11 +60,14 @@ services:
   superset:
     env_file:
       - docker/.env # default
-    image: fabriciovital/data_engineering_stack:latest
+    #image: fabriciovital/data_engineering_stack:latest
+    image: fabriciovital/data_engineering_stack:superset_norte-tel_v1
     container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
     restart: unless-stopped
+    environment:
+      - TZ=America/Manaus
     ports:
       - 8088:8088
     depends_on: *superset-depends-on
@@ -87,6 +94,8 @@ services:
     env_file:
       - docker/.env # default
     restart: unless-stopped
+    environment:
+      - TZ=America/Manaus
     depends_on: *superset-depends-on
     user: "root"
     volumes: *superset-volumes
@@ -105,6 +114,8 @@ services:
     env_file:
       - docker/.env # default
     restart: unless-stopped
+    environment:
+      - TZ=America/Manaus
     depends_on: *superset-depends-on
     user: "root"
     volumes: *superset-volumes
