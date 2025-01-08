@@ -151,6 +151,33 @@ WTF_CSRF_ENABLED = False
 WTF_CSRF_EXEMPT_LIST = []
 WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365
 
+# Configuração de paletas de cores adicionais
+EXTRA_CATEGORICAL_COLOR_SCHEMES = [
+    {
+        "id": "nxCustomPallete",
+        "description": "NX Custom palette",
+        "label": "NX Custom Palette",
+        "isDefault": False,
+        "colors": [
+            "#020617",
+            "#e2e8f0",
+            "#111827",
+            "#1f2937",
+            "#9ca3af",
+            "#60a5fa",
+            "#4ade80",
+            "#2dd4bf",
+            "#fbbf24",
+            "rgba(55, 65, 81, 0.5)",
+            "#1a202c",
+            "#2d3748",
+            "#111b42",
+            "#4b5563",
+            "#6b7280",
+        ],
+    }
+]
+
 #
 # Optionally import superset_config_docker.py (which will have been included on
 # the PYTHONPATH) in order to allow for local settings to be overridden
