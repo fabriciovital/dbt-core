@@ -115,7 +115,7 @@ SELECT
     tipo,
     id_filial,
     id_wfl_tarefa,
-    status_sla id_status_sla,
+    status_sla AS id_status_sla,
     CASE 
         WHEN status_sla = 'N' THEN 'Fora do Prazo'        
         ELSE 'Dentro do Prazo'
@@ -138,7 +138,7 @@ SELECT
     END AS periodo_horario_abertura,
     melhor_horario_agenda,
     liberado,
-    status id_status,
+    status AS id_status,
     CASE 
         WHEN status = 'RAG' THEN 'Reagendar'
         WHEN status = 'EN' THEN 'Encaminhada'
@@ -151,7 +151,7 @@ SELECT
     END AS status,
     id_cliente,
     id_assunto,
-    setor as id_setor,
+    setor AS id_setor,
     id_cidade,
     id_tecnico,
     prioridade AS id_prioridade,
@@ -161,7 +161,7 @@ SELECT
         WHEN prioridade = 'A' THEN 'Alta'
         WHEN prioridade = 'C' THEN 'Crítica'
         ELSE 'Sem Prioridade'
-    END AS prioridade,    
+    END AS prioridade,
     mensagem,
     protocolo,
     endereco,
@@ -175,7 +175,7 @@ SELECT
     referencia,
     impresso,
     data_inicio,
-    data_agenda,
+    CAST(data_agenda AS TIMESTAMP) AS data_agenda,
     data_final,
     CAST(data_fechamento AS TIMESTAMP) AS data_fechamento,
     YEAR(data_fechamento) AS ano_fechamento,
@@ -214,7 +214,7 @@ SELECT
     origem_cadastro,
     ultima_atualizacao,
     last_update,
-    DATE_FORMAT(data_abertura, 'yyyyMM') AS month_key
+    DATE_FORMAT(data_fechamento, 'yyyyMM') AS month_key
 FROM
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}ordem_servico_aberto`
 """,
@@ -233,7 +233,7 @@ SELECT
     tipo,
     id_filial,
     id_wfl_tarefa,
-    status_sla id_status_sla,
+    status_sla AS id_status_sla,
     CASE 
         WHEN status_sla = 'N' THEN 'Fora do Prazo'        
         ELSE 'Dentro do Prazo'
@@ -256,7 +256,7 @@ SELECT
     END AS periodo_horario_abertura,
     melhor_horario_agenda,
     liberado,
-    status id_status,
+    status AS id_status,
     CASE 
         WHEN status = 'RAG' THEN 'Reagendar'
         WHEN status = 'EN' THEN 'Encaminhada'
@@ -269,7 +269,7 @@ SELECT
     END AS status,
     id_cliente,
     id_assunto,
-    setor as id_setor,
+    setor AS id_setor,
     id_cidade,
     id_tecnico,
     prioridade AS id_prioridade,
@@ -293,7 +293,7 @@ SELECT
     referencia,
     impresso,
     data_inicio,
-    data_agenda,
+    CAST(data_agenda AS TIMESTAMP) AS data_agenda,
     data_final,
     CAST(data_fechamento AS TIMESTAMP) AS data_fechamento,
     YEAR(data_fechamento) AS ano_fechamento,
@@ -537,8 +537,8 @@ WITH BASE_PERFORMANCE AS (
         t1.dia_do_mes_fechamento,
         t1.hora_fechamento,
         t1.data_agenda,
-        t1.data_hora_assumido,	
-        t1.data_hora_execucao,	
+        t1.data_hora_assumido,
+        t1.data_hora_execucao,
         t1.id_filial,
         t2.fantasia AS filial,
         t1.id_setor,
