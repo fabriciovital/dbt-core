@@ -80,7 +80,7 @@ def process_table(table):
         logging.error(f'Error processing table {table_name}: {str(e)}')
 
 # Lista de índices das tabelas que você deseja processar
-table_indexes = [0, 1, 2, 3, 4, 5, 7, 8]  # Exemplo, você pode alterar os índices conforme necessário
+table_indexes = [0, 1, 2, 3, 4, 5, 7, 8, 9]  # Exemplo, você pode alterar os índices conforme necessário
 
 # Processar apenas as tabelas com os índices especificados
 for index in table_indexes:

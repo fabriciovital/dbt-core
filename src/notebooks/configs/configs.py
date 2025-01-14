@@ -20,6 +20,7 @@ tables_landing = {
     "7": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/ordem-servico/fechado",
     "8": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/cliente",
     "9": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/cidade",
+    "10": "http://api.nexusitconsulting.com.br:3000/api/v1/ixc/contrato",
 }
 
 # ************************
@@ -35,6 +36,14 @@ tables_api_isp_performance = {
     "7": "ordem_servico_fechado",
     "8": "dim_cliente",
     "9": "dim_cidade",
+    "10": "dim_contrato",
+}
+
+# ************************
+# Start Bronze Tables Situacionais
+# ************************
+tables_manuais_isp_performance = {
+    "1": "dim_equipe_tecnica",
 }
 
 # ************************
@@ -90,26 +99,6 @@ SELECT
     month_key
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_usuarios`
-    """,
-        # Dimensao Cliente
-    "dim_cliente": f"""
-SELECT 
-    id,
-    upper(razao) nome_cliente,
-    last_update,
-    month_key
-FROM 
-    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cliente`
-    """,
-        # Dimensao Cidade
-    "dim_cidade": f"""
-SELECT 
-    id,
-    nome as cidade,
-    last_update,
-    month_key
-FROM 
-    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cidade`
     """,
         # Ordem Serviço Aberto
     "ordem_servico_aberto": f"""
@@ -347,14 +336,193 @@ SELECT
 FROM 
     delta.`{{hdfs_source}}{{prefix_layer_name_source}}ordem_servico_fechado`
 """,
+        # Dimensao Cliente
+    "dim_cliente": f"""
+SELECT 
+    id,
+    upper(razao) nome_cliente,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cliente`
+    """,
+        # Dimensao Cidade
+    "dim_cidade": f"""
+SELECT 
+    id,
+    nome as cidade,
+    last_update,
+    month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_cidade`
+    """,
+        # Contrato
+    "dim_contrato": f"""
+SELECT 
+ 	id_instalador,
+	indicacao_contrato_id,
+	id_indexador_reajuste,
+	data_desistencia,
+	motivo_desistencia,
+	obs_desistencia,
+	obs_contrato,
+	alerta_contrato,
+	ids_contratos_recorrencia,
+	id_responsavel_desistencia,
+	id_responsavel_cancelamento,
+	id_responsavel_negativacao,
+	id,
+	id_filial,
+	status,
+	status_internet,
+	id_cliente,
+	data_assinatura,
+	data_ativacao,
+	data,
+	data_renovacao,
+	bloqueio_automatico,
+	imp_carteira,
+	data_expiracao,
+	isentar_contrato,
+	pago_ate_data,
+	id_vd_contrato,
+	contrato,
+	endereco,
+	numero,
+	comissao,
+	bairro,
+	tipo,
+	descricao_aux_plano_venda,
+	aviso_atraso,
+	id_tipo_contrato,
+	id_carteira_cobranca,
+	obs,
+	id_modelo,
+	status_velocidade,
+	id_vendedor,
+	cc_previsao,
+	nao_avisar_ate,
+	nao_bloquear_ate,
+	id_tipo_documento,
+	tipo_doc_opc,
+	desconto_fidelidade,
+	tipo_doc_opc2,
+	tipo_doc_opc3,
+	taxa_improdutiva,
+	tipo_doc_opc4,
+	desbloqueio_confianca,
+	data_negativacao,
+	data_acesso_desativado,
+	motivo_cancelamento,
+	data_cancelamento,
+	obs_cancelamento,
+	id_vendedor_ativ,
+	fidelidade,
+	tipo_cobranca,
+	desbloqueio_confianca_ativo,
+	id_responsavel,
+	taxa_instalacao,
+	protocolo_negativacao,
+	dt_ult_bloq_auto,
+	dt_ult_bloq_manual,
+	dt_ult_des_bloq_conf,
+	dt_ult_ativacao,
+	avalista_1,
+	dt_ult_finan_atraso,
+	avalista_2,
+	dt_utl_negativacao,
+	data_cadastro_sistema,
+	ultima_atualizacao,
+	complemento,
+	cidade,
+	imp_importacao,
+	renovacao_automatica,
+	imp_rede,
+	imp_bkp,
+	motivo_inclusao,
+	imp_treinamento,
+	imp_status,
+	liberacao_bloqueio_manual,
+	imp_obs,
+	contrato_suspenso,
+	imp_realizado,
+	imp_motivo,
+	imp_inicial,
+	imp_final,
+	ativacao_numero_parcelas,
+	ativacao_vencimentos,
+	ativacao_valor_parcela,
+	id_tipo_doc_ativ,
+	id_produto_ativ,
+	id_cond_pag_ativ,
+	endereco_padrao_cliente,
+	cep,
+	referencia,
+	id_condominio,
+	nf_info_adicionais,
+	assinatura_digital,
+	tipo_produtos_plano,
+	bloco,
+	apartamento,
+	latitude,
+	longitude,
+	num_parcelas_atraso,
+	dt_ult_desiste,
+	id_contrato_principal,
+	gerar_finan_assin_digital_contrato,
+	credit_card_recorrente_token,
+	credit_card_recorrente_bandeira_cartao,
+	id_motivo_negativacao,
+	obs_negativacao,
+	restricao_auto_desbloqueio,
+	motivo_restricao_auto_desbloq,
+	nao_susp_parc_ate,
+	liberacao_suspensao_parcial,
+	utilizando_auto_libera_susp_parc,
+	restricao_auto_libera_susp_parcial,
+	motivo_restri_auto_libera_parc,
+	data_inicial_suspensao,
+	data_final_suspensao,
+	data_retomada_contrato,
+	dt_ult_liberacao_susp_parc,
+	base_geracao_tipo_doc,
+	integracao_assinatura_digital,
+	url_assinatura_digital,
+	token_assinatura_digital,
+	testemunha_assinatura_digital,
+	document_photo,
+	selfie_photo,
+	tipo_localidade,
+	estrato_social_col,
+	last_update,
+	month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_contrato`
+    """,
 }
 
+tables_silver_manuais = {
+        # Dimensao Equipe Tecnica
+    "dim_equipe_tecnica": f"""
+SELECT 
+    periodo,
+    id_filial,
+    filial,
+    equipe,
+    id_tecnico,
+    tecnico,
+    last_update,
+    DATE_FORMAT(periodo, 'yyyyMM') AS month_key
+FROM 
+    delta.`{{hdfs_source}}{{prefix_layer_name_source}}dim_equipe_tecnica`
+    """,
+}
 
 # ************************
 # Start Gold Tables
 # ************************
 tables_gold = {
-        # Ordem Serviço Aberto
+        # Perfomance Ordem Serviço
     "performance_ordem_servico": """
 WITH BASE_PERFORMANCE AS (
     SELECT
@@ -671,5 +839,47 @@ GROUP BY
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_usuarios` t6 ON (t6.id = t1.id_login)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t7 ON (t7.id = t1.id_cliente)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cidade` t8 ON (t8.id = t1.id_cidade)
+""",
+    # Performance Contrato
+    "performance_contrato": """
+    SELECT
+        t1.data_desistencia,
+        t1.motivo_desistencia,
+        t1.id_filial,
+        t2.fantasia AS filial,
+        t1.status,
+        t1.status_internet,
+        t1.id_cliente,
+        t3.nome_cliente,
+        t1.data_assinatura,
+        t1.data_ativacao,
+        t1.data,
+        t1.data_renovacao,
+        t1.bloqueio_automatico,
+        t1.data_expiracao,
+        t1.pago_ate_data,
+        t1.contrato,
+        t1.status_velocidade,
+        t1.id_vendedor,
+        t1.data_negativacao,
+        t1.data_acesso_desativado,
+        t1.motivo_cancelamento,
+        t1.data_cancelamento,
+        t1.id_vendedor_ativ,
+        t1.fidelidade,
+        t1.cidade as id_cidade,
+        t4.cidade,
+        t1.contrato_suspenso,
+        t1.ativacao_numero_parcelas,
+        t1.ativacao_vencimentos,
+        t1.ativacao_valor_parcela,
+        t1.tipo_produtos_plano,
+        t1.num_parcelas_atraso,
+        t1.last_update
+    FROM
+        delta.`s3a://silver/isp_performance/silver_dim_contrato` t1
+        LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
+        LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t3 ON (t3.id = t1.id_cliente)
+        LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cidade` t4 ON (t4.id = t1.cidade)
 """,
 }
