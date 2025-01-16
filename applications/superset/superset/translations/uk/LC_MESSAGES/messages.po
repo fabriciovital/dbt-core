@@ -8201,7 +8201,7 @@ msgstr "Положення мітки проміжного вузла на де�
 msgid "Position of row level subtotal"
 msgstr "Положення субтотального рівня рядка"
 
-msgid "Powered by Nexus IT Consulting"
+msgid "Powered by Apache Superset"
 msgstr "Працює від Superset Apache"
 
 msgid "Pre-filter"
@@ -12299,7 +12299,7 @@ msgstr "Укорочення y вісь"
 #, fuzzy
 msgid ""
 "Truncate X Axis. Can be overridden by specifying a min or max bound. Only"
-" applicable for numercal X axis."
+" applicable for numerical X axis."
 msgstr ""
 "Укоротився вісь. Можна перекрити, вказавши мінімальну або максимальну "
 "межу."

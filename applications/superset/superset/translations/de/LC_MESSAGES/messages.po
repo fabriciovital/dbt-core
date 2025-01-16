@@ -8286,7 +8286,7 @@ msgstr "Beschriftungs-Position der Zwischenknoten im Baum"
 msgid "Position of row level subtotal"
 msgstr "Position der Zwischensumme auf Zeilenebene"
 
-msgid "Powered by Nexus IT Consulting"
+msgid "Powered by Apache Superset"
 msgstr "Powered Apache Superset"
 
 msgid "Pre-filter"
@@ -12482,7 +12482,7 @@ msgstr "X-Achse abschneiden"
 
 msgid ""
 "Truncate X Axis. Can be overridden by specifying a min or max bound. Only"
-" applicable for numercal X axis."
+" applicable for numerical X axis."
 msgstr ""
 "X-Achse abschneiden. Kann durch Angabe einer Minimal- oder Maximalgrenze "
 "außer Kraft gesetzt werden. Nur anwendbar für numerische X-Achsen."

@@ -120,7 +120,6 @@ CORS_OPTIONS = {
     'supports_credentials': True,
     'allow_headers': ['*'],
     'resources': ['*'],
-    # 'origins': ['http://170.79.87.9:8088', 'http://170.79.87.9:8888', 'http://170.79.87.9:3001', 'http://170.79.87.9:8889']
     'origins': ['*']
 }
 
@@ -128,15 +127,10 @@ CORS_OPTIONS = {
 
 FEATURE_FLAGS = {"ENABLE_TEMPLATE_PROCESSING": True, "DASHBOARD_CROSS_FILTERS": True, "EMBEDDABLE_CHARTS": True, "EMBEDDED_SUPERSET": True}
 
-# SESSION_COOKIE_SAMESITE = None
-# PUBLIC_ROLE_LIKE_GAMMA = True
-# ENABLE_PROXY_FIX = True
 OVERRIDE_HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
 TALISMAN_ENABLED = False
-# ENABLE_GUEST_ACCESS = True
 GUEST_ROLE_NAME = "Public"  # Ajustar permissões de função se ocorrer erro 403
 GUEST_TOKEN_JWT_EXP_SECONDS = 3600  # 5 minutos, ou ajuste para um tempo maior
-# SESSION_COOKIE_SECURE = False
 JWT_VERIFY_SUB = False
 
 # Visual Customizations

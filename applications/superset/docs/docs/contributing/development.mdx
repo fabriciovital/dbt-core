@@ -72,6 +72,7 @@ documentation.
 configured to be secure.
 :::
 
+
 ### Supported environment variables
 
 Affecting the Docker build process:
@@ -79,11 +80,26 @@ Affecting the Docker build process:
 - **INCLUDE_FIREFOX (default=false):** whether to include the Firefox headless browser in the build
 - **INCLUDE_CHROMIUM (default=false):** whether to include the Firefox headless browser in the build
 - **BUILD_TRANSLATIONS(default=false):** whether to compile the translations from the .po files available
+- **SUPERSET_LOAD_EXAMPLES (default=yes):** whether to load the examples into the database upon startup,
+  save some precious time on startup by `SUPERSET_LOAD_EXAMPLES=no docker compose up`
+- **SUPERSET_LOG_LEVEL (default=info)**: Can be set to debug, info, warning, error, critical
+  for more verbose logging
 
 For more env vars that affect your configuration, see this
 [superset_config.py](https://github.com/apache/superset/blob/master/docker/pythonpath_dev/superset_config.py)
 used in the `docker compose` context to assign env vars to the superset configuration.
 
+### Accessing the postgres database
+Sometimes it's useful to access the database in the docker container directly.
+You can enter a `psql` shell (the official Postgres client) by running the following command:
+
+```bash
+docker compose exec db psql -U superset
+```
+
+Also note that the database is exposed on port 5432, so you can connect to it using your favorite
+Postgres client or even SQL Lab itselft directly in Superset by creating a new database connection
+to `localhost:5432`.
 
 ### Nuking the postgres database
 
@@ -117,7 +133,8 @@ instance, but many people like to run that tooling from their host.
 
 Assuming you already have a way to setup your python environments
 like `pyenv`, `virtualenv` or something else, all you should have to
-do is to install our dev, pinned python requirements bundle
+do is to install our dev, pinned python requirements bundle, after installing
+the prerequisites mentioned in [OS Dependencies](https://superset.apache.org/docs/installation/pypi/#os-dependencies)
 
 ```bash
 pip install -r requirements/development.txt
@@ -255,19 +272,19 @@ If you add a new requirement or update an existing requirement (per the `install
 $ python3 -m venv venv
 $ source venv/bin/activate
 $ python3 -m pip install -r requirements/development.txt
-$ pip-compile-multi --no-upgrade
+$ ./scripts/uv-pip-compile.sh
 ```
 
-When upgrading the version number of a single package, you should run `pip-compile-multi` with the `-P` flag:
+When upgrading the version number of a single package, you should run `./scripts/uv-pip-compile.sh` with the `-P` flag:
 
 ```bash
-$ pip-compile-multi -P my-package
+$ ./scripts/uv-pip-compile.sh -P some-package-to-upgrade
 ```
 
-To bring all dependencies up to date as per the restrictions defined in `setup.py` and `requirements/*.in`, run pip-compile-multi` without any flags:
+To bring all dependencies up to date as per the restrictions defined in `setup.py` and `requirements/*.in`, run `./scripts/uv-pip-compile.sh --upgrade`
 
 ```bash
-$ pip-compile-multi
+$ ./scripts/uv-pip-compile.sh --upgrade
 ```
 
 This should be done periodically, but it is recommended to do thorough manual testing of the application to ensure no breaking changes have been introduced that aren't caught by the unit and integration tests.

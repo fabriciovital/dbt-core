@@ -8849,7 +8849,7 @@ msgstr "Position de l’étiquette de nœud intermédiaire sur l’arbre"
 msgid "Position of row level subtotal"
 msgstr "Position du sous-total au niveau de la rangée"
 
-msgid "Powered by Nexus IT Consulting"
+msgid "Powered by Apache Superset"
 msgstr "Propulsé par Apache Superset"
 
 msgid "Pre-filter"
@@ -13309,7 +13309,7 @@ msgstr "Trier les métriques"
 
 msgid ""
 "Truncate X Axis. Can be overridden by specifying a min or max bound. Only"
-" applicable for numercal X axis."
+" applicable for numerical X axis."
 msgstr ""
 "Marquer une colonne comme temporelle dans le modal «Modifier la source de"
 " données»"

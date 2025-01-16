@@ -8294,7 +8294,7 @@ msgstr "Posição do rótulo do nó intermédio na árvore"
 msgid "Position of row level subtotal"
 msgstr "Posição do subtotal ao nível da linha"
 
-msgid "Powered by Nexus IT Consulting"
+msgid "Powered by Apache Superset"
 msgstr "Feito por Apache Superset"
 
 #, fuzzy
@@ -12428,7 +12428,7 @@ msgstr "Truncar Eixo Y"
 #, fuzzy
 msgid ""
 "Truncate X Axis. Can be overridden by specifying a min or max bound. Only"
-" applicable for numercal X axis."
+" applicable for numerical X axis."
 msgstr ""
 "Truncar Eixo Y. Pode ser substituído pela especificação de um limite "
 "mínimo ou máximo."

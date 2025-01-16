@@ -7547,7 +7547,7 @@ msgstr ""
 msgid "Position of row level subtotal"
 msgstr ""
 
-msgid "Powered by Nexus IT Consulting"
+msgid "Powered by Apache Superset"
 msgstr ""
 
 msgid "Pre-filter"
@@ -11210,7 +11210,7 @@ msgstr ""
 
 msgid ""
 "Truncate X Axis. Can be overridden by specifying a min or max bound. Only"
-" applicable for numercal X axis."
+" applicable for numerical X axis."
 msgstr ""
 
 msgid "Truncate Y Axis"
