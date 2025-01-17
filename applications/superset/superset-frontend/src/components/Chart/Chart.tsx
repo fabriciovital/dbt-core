@@ -284,8 +284,8 @@ class Chart extends PureComponent<ChartProps, {}> {
 
   renderSpinner(databaseName: string | undefined) {
     const message = databaseName
-      ? t('Waiting on %s', databaseName)
-      : t('Waiting on database...');
+      ? t('Aguardando Processo...')
+      : t('Aguardando Processo...');
 
     return (
       <LoadingDiv>

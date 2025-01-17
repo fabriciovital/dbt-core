@@ -32,9 +32,10 @@ export const useNativeFilters = () => {
   const canEdit = useSelector<RootState, boolean>(
     ({ dashboardInfo }) => dashboardInfo.dash_edit_perm,
   );
-
   const filters = useFilters();
+  console.log("filters", filters)
   const filterValues = useMemo(() => Object.values(filters), [filters]);
+  console.log("filterValues", filterValues)
   const expandFilters = getUrlParam(URL_PARAMS.expandFilters);
   const [dashboardFiltersOpen, setDashboardFiltersOpen] = useState(
     expandFilters ?? !!filterValues.length,
