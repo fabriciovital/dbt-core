@@ -51,6 +51,7 @@ if __name__ == "__main__":
             .config("spark.driver.memory", "4g") \
             .config("spark.memory.fraction", "0.8") \
             .config("spark.sql.shuffle.partitions", "50") \
+            .config("spark.sql.parquet.int96RebaseModeInWrite", "LEGACY") \
             .getOrCreate()
 
 # Configurações específicas do Delta Lake
