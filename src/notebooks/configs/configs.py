@@ -916,6 +916,7 @@ SELECT
     t1.tipo_produtos_plano,
     t1.num_parcelas_atraso,
     t1.motivo_inclusao,
+    t1.tipo,
     COUNT(t1.contrato) AS qtd_total,
     t1.last_update
 FROM
@@ -977,6 +978,7 @@ GROUP BY
     t1.tipo_produtos_plano,
     t1.num_parcelas_atraso,
     t1.motivo_inclusao,
+    t1.tipo,
     t1.last_update
 """,
 }
