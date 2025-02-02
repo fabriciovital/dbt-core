@@ -5,16 +5,15 @@ services:
     hostname: trino
     ports:
       - 8082:8080
-    environment:
-      - TRINO_USER=${TRINO_USER}
-      - TRINO_PASSWORD=${TRINO_PASSWORD}
     volumes:
       - ./conf/hive.properties:/etc/trino/catalog/hive.properties
       - ./conf/delta.properties:/etc/trino/catalog/delta.properties
       - ./conf/iceberg.properties:/etc/trino/catalog/iceberg.properties
       - ./conf/postgres.properties:/etc/trino/catalog/postgres.properties
       - ./conf/password-authenticator.properties:/etc/trino/password-authenticator.properties
-      - ./conf/passwords:/etc/trino/passwords  # Assegure que este arquivo está correto
+      - ./conf/passwords/password.db:/etc/trino/passwords/password.db
+    environment:
+      - TRINO_PASSWORD_AUTHENTICATION_ENABLED=true
     networks:
       - sparkanos
     depends_on:
