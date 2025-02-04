@@ -908,6 +908,7 @@ SELECT
     t1.contrato,
     t1.status_velocidade,
     t1.id_vendedor,
+    t5.funcionario AS vendedor,
     t1.data_negativacao,
     t1.ano_negativacao,
     t1.ano_mes_negativacao,    
@@ -937,6 +938,7 @@ FROM
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_filial` t2 ON (t2.id = t1.id_filial)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cliente` t3 ON (t3.id = t1.id_cliente)
     LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_cidade` t4 ON (t4.id = t1.cidade)
+    LEFT JOIN delta.`s3a://silver/isp_performance/silver_dim_colaboradores` t5 ON (t5.id = t1.id_vendedor)
 GROUP BY
     t1.data_desistencia,
     t1.ano_desistencia,
@@ -970,6 +972,7 @@ GROUP BY
     t1.contrato,
     t1.status_velocidade,
     t1.id_vendedor,
+    t5.funcionario,
     t1.data_negativacao,
     t1.ano_negativacao,
     t1.ano_mes_negativacao,
