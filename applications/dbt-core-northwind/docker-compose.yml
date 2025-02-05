@@ -2,7 +2,7 @@ version: '3'
 
 services:
   # Banco de Homologação (Northwind)
-  db:
+  db-dev:
     container_name: db-dev
     image: postgres:latest
     environment:
@@ -15,7 +15,7 @@ services:
       - ./northwind.sql:/docker-entrypoint-initdb.d/northwind.sql
       - ./files:/files
     ports:
-      - 3150:5432  # ALTERADO para evitar conflito com outras instâncias de PostgreSQL
+      - 3150:5432
     networks:
       - northwind-network
 
@@ -39,7 +39,7 @@ services:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: postgres
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_LISTEN_PORT: 5050
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
@@ -57,6 +57,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    working_dir: /usr/app/northwind  # <-- Adicione esta linha
     environment:
       DBT_PROFILES_DIR: /northwind
       DB_HOST_DEV: ${DB_HOST_DEV}
@@ -79,10 +80,11 @@ services:
       - .:/usr/app
       - ./dbt/target:/usr/app/dbt/target
       - ./profiles.yml:/northwind/profiles.yml
+      - ./northwind/dbt_project.yml:/usr/app/northwind/dbt_project.yml
     ports:
       - 8085:8085
     depends_on:
-      - db
+      - db-dev
       - db-prod
     networks:
       - northwind-network
