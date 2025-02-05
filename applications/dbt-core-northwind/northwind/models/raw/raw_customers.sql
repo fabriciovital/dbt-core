@@ -1,2 +1,2 @@
--- models/orders.sql
+-- models/customers.sql
 select * from customers

@@ -19,5 +19,5 @@ northwind:
       dbname: "{{ env_var('DB_NAME_PROD') }}"
       schema: "{{ env_var('DB_SCHEMA_PROD') }}"
       threads: "{{ env_var('DB_THREADS_PROD') | int }}"
-
-  target: prod
+      
+  target: dev
