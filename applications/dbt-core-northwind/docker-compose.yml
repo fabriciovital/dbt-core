@@ -57,7 +57,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /usr/app/northwind  # <-- Adicione esta linha
+    working_dir: /usr/app/northwind
     environment:
       DBT_PROFILES_DIR: /northwind
       DB_HOST_DEV: ${DB_HOST_DEV}
@@ -80,7 +80,6 @@ services:
       - .:/usr/app
       - ./dbt/target:/usr/app/dbt/target
       - ./profiles.yml:/northwind/profiles.yml
-      - ./northwind/dbt_project.yml:/usr/app/northwind/dbt_project.yml
     ports:
       - 8085:8085
     depends_on:
