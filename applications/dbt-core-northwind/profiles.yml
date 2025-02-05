@@ -1,23 +1,23 @@
 northwind:
   outputs:
     dev:
-      type: postgres
-      host: db
-      user: postgres
-      password: postgres
-      port: 5432
-      dbname: northwind
-      schema: public
-      threads: 1
+      type: "{{ env_var('DB_TYPE_DEV') }}"
+      host: "{{ env_var('DB_HOST_DEV') }}"
+      user: "{{ env_var('DB_USER_DEV') }}"
+      password: "{{ env_var('DB_PASS_DEV') }}"
+      port: "{{ env_var('DB_PORT_DEV') | int }}"
+      dbname: "{{ env_var('DB_NAME_DEV') }}"
+      schema: "{{ env_var('DB_SCHEMA_DEV') }}"
+      threads: "{{ env_var('DB_THREADS_DEV') | int }}"
+
     prod:
       type: "{{ env_var('DB_TYPE_PROD') }}"
       host: "{{ env_var('DB_HOST_PROD') }}"
       user: "{{ env_var('DB_USER_PROD') }}"
       password: "{{ env_var('DB_PASS_PROD') }}"
-      port: "{{ env_var('DB_PORT_PROD') }}"
+      port: "{{ env_var('DB_PORT_PROD') | int }}"
       dbname: "{{ env_var('DB_NAME_PROD') }}"
       schema: "{{ env_var('DB_SCHEMA_PROD') }}"
-      threads: "{{ env_var('DB_THREADS_PROD') }}"
-  target: dev
+      threads: "{{ env_var('DB_THREADS_PROD') | int }}"
 
-  
+  target: dev
