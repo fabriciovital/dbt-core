@@ -1,8 +1,0 @@
-version: 2
-
-sources:
-  - name: bronze
-    database: delta   # O catálogo no Trino
-    schema: bronze
-    tables:
-      - name: bronze_dim_assunto
