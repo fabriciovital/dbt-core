@@ -50,6 +50,8 @@ def write_to_postgres(df, table_name):
     if df:
         try:
             logging.info(f"Gravando tabela {table_name} no PostgreSQL...")
+
+            # 🔥 Usa TRUNCATE para limpar a tabela sem remover dependências
             df.write \
                 .format("jdbc") \
                 .option("url", PG_URL) \
@@ -57,8 +59,10 @@ def write_to_postgres(df, table_name):
                 .option("user", PG_USER) \
                 .option("password", PG_PASSWORD) \
                 .option("driver", PG_DRIVER) \
+                .option("truncate", "true") \
                 .mode("overwrite") \
                 .save()
+
             logging.info(f"Tabela {table_name} gravada com sucesso no PostgreSQL.")
         except Exception as e:
             logging.error(f"Erro ao gravar {table_name} no PostgreSQL: {e}")

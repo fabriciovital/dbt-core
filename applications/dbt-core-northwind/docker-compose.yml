@@ -87,10 +87,13 @@ services:
       - db-prod
     networks:
       - northwind-network
+      - sparkanos  # Adicionando a rede do Airflow
 
 networks:
   northwind-network:
     driver: bridge
+  sparkanos:
+    external: true  # Garante que a rede já existe
 
 volumes:
   pgadmin_root_prefs:
