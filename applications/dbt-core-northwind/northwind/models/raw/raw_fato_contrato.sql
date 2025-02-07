@@ -1,2 +1,4 @@
--- models/bronze_dim_contrato.sql
-select * from bronze_dim_contrato
+-- models/raw/raw_dim_contrato.sql
+
+SELECT *
+FROM {{ source('bronze', 'bronze_dim_contrato') }}  -- Acessando a tabela de produção

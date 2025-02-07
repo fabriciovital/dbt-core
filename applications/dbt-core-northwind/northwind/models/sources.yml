@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: "Fonte de dados de bronze no banco de produção"
+    tables:
+      - name: bronze_dim_assunto
+        description: "Tabela de dados de assunto"
+      - name: bronze_dim_cidade
+        description: "Tabela de dados de cidade"
+      - name: bronze_dim_cliente
+        description: "Tabela de dados de cliente"
+      - name: bronze_dim_colaboradores
+        description: "Tabela de dados de colaboradores"
+      - name: bronze_dim_contrato
+        description: "Tabela de dados de contrato"
+      - name: bronze_dim_filial
+        description: "Tabela de dados de filial"
+      - name: bronze_dim_setor
+        description: "Tabela de dados de setor"
+      - name: bronze_dim_usuarios
+        description: "Tabela de dados de usuários"
+      - name: bronze_ordem_servico_aberto
+        description: "Tabela de ordens de serviço abertas"
+      - name: bronze_ordem_servico_fechado
+        description: "Tabela de ordens de serviço fechadas"
